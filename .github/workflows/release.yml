@@ -1,0 +1,104 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          
+          # Extract the changelog section for this version
+          CHANGELOG_FILE="netflix-speed-boost/docs/CHANGELOG.md"
+          
+          # Find the section for this version and extract until the next version or end
+          CHANGELOG_CONTENT=$(awk "/## \[$VERSION\]/{flag=1; next} /## \[/{flag=0} flag" "$CHANGELOG_FILE")
+          
+          # If changelog is empty, use a default message
+          if [ -z "$CHANGELOG_CONTENT" ]; then
+            CHANGELOG_CONTENT="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/netflix-speed-boost/docs/CHANGELOG.md) for details."
+          fi
+          
+          # Save to output (handle multiline)
+          echo "CONTENT<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Build Chrome package
+        run: |
+          cd netflix-speed-boost/scripts
+          chmod +x generate-chrome-pkg.sh
+          ./generate-chrome-pkg.sh
+          cd ..
+          
+      - name: Extract package contents
+        run: |
+          cd netflix-speed-boost
+          PACKAGE_NAME="netflix-speed-boost-v${{ steps.get_version.outputs.VERSION }}.zip"
+          
+          # Create a directory for extracted contents
+          mkdir -p release-contents
+          
+          # Extract the zip file
+          unzip "$PACKAGE_NAME" -d release-contents/
+          
+          # Move the zip to a more accessible location
+          mv "$PACKAGE_NAME" ../
+          
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Netflix Speed Boost v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## 🚀 Netflix Speed Boost v${{ steps.get_version.outputs.VERSION }}
+            
+            Skip the boring slow parts! 🎬
+            
+            ${{ steps.changelog.outputs.CONTENT }}
+            
+            ---
+            
+            ### 📦 Installation
+            
+            #### Option 1: Chrome Web Store (Recommended)
+            *Coming soon*
+            
+            #### Option 2: Manual Installation
+            1. Download the `netflix-speed-boost-v${{ steps.get_version.outputs.VERSION }}.zip` file below
+            2. Extract the ZIP file
+            3. Open Chrome and go to `chrome://extensions/`
+            4. Enable "Developer mode" in the top right
+            5. Click "Load unpacked"
+            6. Select the extracted folder
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/blob/main/netflix-speed-boost/docs/CHANGELOG.md
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./netflix-speed-boost-v${{ steps.get_version.outputs.VERSION }}.zip
+          asset_name: netflix-speed-boost-v${{ steps.get_version.outputs.VERSION }}.zip
+          asset_content_type: application/zip
