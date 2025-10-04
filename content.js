@@ -19,6 +19,7 @@
   // User settings with defaults
   let settings = {
     speedBoost: 1.5,        // Speed multiplier when holding
+    customKey: 'KeyL',      // Custom key binding for speed boost
     enableAnimation: true,   // Show wave animation
     enableText: false        // Show speed text indicator
   };
@@ -50,6 +51,11 @@
     if (areaName === 'sync') {
       if (changes.speedBoost) {
         settings.speedBoost = changes.speedBoost.newValue;
+      }
+      if (changes.customKey) {
+        settings.customKey = changes.customKey.newValue;
+        // Rebind custom key events when setting changes
+        bindCustomKeyEvents();
       }
       if (changes.enableAnimation !== undefined) {
         settings.enableAnimation = changes.enableAnimation.newValue;
@@ -559,6 +565,116 @@
     fn('click', blockClick, { capture: true, passive: false });
   }
 
+  /**
+   * Handle custom key keydown event to start speed boost
+   * Only activates if the custom key is pressed and not over input elements
+   * @param {KeyboardEvent} e - Keydown event
+   */
+  function handleCustomKeyDown(e) {
+    if (e.code !== settings.customKey) {
+      return;
+    }
+    
+    // Don't activate if user is typing in input fields
+    const target = e.target;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+      return;
+    }
+    
+    // Prevent default key behavior
+    e.preventDefault();
+    
+    const v = getActiveVideo();
+    if (!v) {
+      return;
+    }
+    activeVideo = v;
+
+    // Don't start new timer if already holding
+    if (isHold) {
+      return;
+    }
+
+    // Clear any existing timer
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+    }
+
+    // Reset hold state and start timer
+    isHold = false;
+    
+    // Get center of screen for animation
+    const clickX = window.innerWidth / 2;
+    const clickY = window.innerHeight / 2;
+    
+    holdTimer = setTimeout(() => {
+      isHold = true;
+      restoreRate = v.playbackRate ?? 1.0;
+      try { 
+        v.playbackRate = settings.speedBoost; 
+        showSpeedIndicator(clickX, clickY);
+      } catch (err) {
+        // Silently fail - video element may not support playback rate changes
+      }
+    }, HOLD_THRESHOLD);
+  }
+
+  /**
+   * Handle custom key keyup event to end speed boost
+   * @param {KeyboardEvent} e - Keyup event
+   */
+  function handleCustomKeyUp(e) {
+    if (e.code !== settings.customKey) {
+      return;
+    }
+    
+    // Prevent default key behavior
+    e.preventDefault();
+    
+    // Clear the timer
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    
+    if (isHold) {
+      try { 
+        const currentVideo = getActiveVideo();
+        if (currentVideo && Number.isFinite(restoreRate)) {
+          currentVideo.playbackRate = restoreRate; 
+          hideSpeedIndicator();
+        } else if (currentVideo) {
+          currentVideo.playbackRate = 1.0;
+        }
+      } catch (err) {
+        // Attempt to force reset on error
+        try {
+          const currentVideo = getActiveVideo();
+          if (currentVideo) {
+            currentVideo.playbackRate = 1.0;
+          }
+        } catch (resetErr) {
+          // Silently fail - video element may have been removed
+        }
+      }
+      restoreRate = null; 
+      activeVideo = null; 
+      isHold = false;
+    }
+  }
+
+  /**
+   * Bind/unbind custom key event listeners
+   * Removes old listeners and adds new ones based on current customKey setting
+   */
+  function bindCustomKeyEvents() {
+    // Remove any existing key listeners
+    document.removeEventListener('keydown', handleCustomKeyDown, { capture: true, passive: false });
+    document.removeEventListener('keyup', handleCustomKeyUp, { capture: true, passive: false });
+    
+    // Add new listeners for the current custom key
+    document.addEventListener('keydown', handleCustomKeyDown, { capture: true, passive: false });
+    document.addEventListener('keyup', handleCustomKeyUp, { capture: true, passive: false });
+  }
+
   // ============================================================================
   // SPA NAVIGATION HANDLING
   // ============================================================================
@@ -617,6 +733,7 @@
       bindPress(true); 
       bindRelease(true); 
       bindClickBlocker(true); 
+      bindCustomKeyEvents();
       patchHistory(); 
       observe();
       activeVideo = getActiveVideo();
