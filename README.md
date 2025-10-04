@@ -1,3 +1,9 @@
+
+---
+
+*This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
+
+---
 # Netflix Speed Boost
 
 A Chrome extension that allows you to temporarily boost Netflix playback speed by holding down on the video area.
@@ -8,7 +14,8 @@ A Chrome extension that allows you to temporarily boost Netflix playback speed b
 
 ## 🎯 Features
 
-- **🚀 Instant Speed Boost**: Hold on the right side of any video to temporarily increase playback speed
+- **🚀 Instant Speed Boost**: Hold on the right side of any video OR hold a custom key to temporarily increase playback speed
+- **⌨️ Customizable Key Binding**: Set any key as your speed boost trigger (default: 'L' key)
 - **⚙️ Fully Customizable**: Choose speeds from 1.25× to 5× (default: 1.5×)
 - **🎨 Beautiful Visual Feedback**: Smooth wave animations and optional speed indicator
 - **🖥️ Fullscreen Compatible**: Works seamlessly in fullscreen mode
@@ -33,11 +40,13 @@ A Chrome extension that allows you to temporarily boost Netflix playback speed b
 ## 🎬 Usage
 
 1. **Navigate to Netflix**: Open any Netflix video
-2. **Customize Settings** (optional): Click the extension icon to set your preferred speed
-3. **Boost Speed**: Click and hold on the **right third** of the video area
+2. **Customize Settings** (optional): Click the extension icon to set your preferred speed and key binding
+3. **Boost Speed**: Either:
+   - Click and hold on the **right third** of the video area, OR
+   - Hold your custom key (default: 'L')
 4. **Release**: Let go to instantly return to normal playback speed
 
-**💡 Pro Tip**: The extension only activates on the right side of the screen, so it won't interfere with normal pause/play functionality!
+**💡 Pro Tip**: The extension only activates on the right side of the screen or with your custom key, so it won't interfere with normal pause/play functionality!
 
 ## ⚙️ Settings
 
@@ -48,12 +57,18 @@ Click the extension icon in your Chrome toolbar to access settings:
 - Default: 1.5×
 - Slider snaps to preset values for easy selection
 
+### Key Binding
+- **Custom Key**: Set any key as your speed boost trigger (default: 'L')
+- **Interactive Setup**: Click "Set Key" to capture any key press
+- **Smart Validation**: Prevents conflicts with input fields and modifier keys
+
 ### Visual Options
 - **Wave Animation**: Smooth animated waves on the right edge (default: enabled)
 - **Text Indicator**: Display speed multiplier on screen (default: disabled)
 
 ### Reset
 - One-click reset to default settings
+
 
 ## 🔒 Privacy & Security
 
@@ -68,50 +83,16 @@ Click the extension icon in your Chrome toolbar to access settings:
 
 See [docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md) for complete details.
 
-## 📁 Repository Structure
-
-```
-netflix-speed-boost/           # GitHub repository root
-├── manifest.json              # Extension configuration
-├── content.js                 # Main extension logic
-├── popup.html                 # Settings UI
-├── popup.js                   # Settings logic
-├── README.md                  # This file
-├── .gitignore                 # Git ignore rules
-├── docs/                      # Documentation
-│   ├── README.md              # Detailed documentation
-│   ├── LICENSE                 # MIT License
-│   ├── CHANGELOG.md           # Version history
-│   ├── PRIVACY_POLICY.md      # Privacy policy
-│   ├── guides/                # Step-by-step guides
-│   │   ├── QUICK_START.md     # Quick reference
-│   │   ├── PUBLISHING_GUIDE.md # Complete publishing guide
-│   │   └── SUBMISSION_CHECKLIST.md # Pre-submission checklist
-│   ├── store/                 # Chrome Web Store materials
-│   │   └── STORE_LISTING.md   # Store listing content
-│   └── development/           # Development resources
-│       ├── PRODUCTION_READY_SUMMARY.md # Production summary
-│       └── generate-icons.sh   # Icon generation script
-└── assets/                    # Media assets
-    ├── logo.png               # Source logo
-    └── icons/                 # Extension icons
-        ├── icon16.png         # Toolbar icon (16×16)
-        ├── icon48.png         # Extensions page icon (48×48)
-        └── icon128.png        # Store listing icon (128×128)
-```
 
 ## 🚀 Quick Start
 
 1. **Test the Extension**: Load in Chrome for testing
-2. **Create Package**: See [docs/guides/QUICK_START.md](docs/guides/QUICK_START.md)
-3. **Publish**: Follow [docs/guides/PUBLISHING_GUIDE.md](docs/guides/PUBLISHING_GUIDE.md)
+2. **Install**: Follow the manual installation steps above
+3. **Customize**: Click the extension icon to set your preferred speed and key binding
 
 ## 📚 Documentation
 
-- **[Complete Documentation](docs/README.md)** - Detailed user guide
-- **[Quick Start Guide](docs/guides/QUICK_START.md)** - Get started quickly
-- **[Publishing Guide](docs/guides/PUBLISHING_GUIDE.md)** - Chrome Web Store submission
-- **[Store Listing](docs/store/STORE_LISTING.md)** - Store listing materials
+- **[AI Context](docs/AI_CONTEXT.md)** - Development context for AI tools
 - **[Privacy Policy](docs/PRIVACY_POLICY.md)** - Privacy and data handling
 - **[Changelog](docs/CHANGELOG.md)** - Version history
 
@@ -122,16 +103,10 @@ netflix-speed-boost/           # GitHub repository root
 - macOS/Linux (for icon generation script)
 - `sips` command-line tool (included on macOS)
 
-### Regenerating Icons
-```bash
-./scripts/generate-icons.sh assets/logo.png
-```
-
-### Building for Production
-```bash
-# Create Chrome Web Store package
-./scripts/generate-chrome-pkg.sh
-```
+### Key Binding Development
+- **Key Capture Logic**: `popup.js` - Interactive key binding system
+- **Key Handling**: `content.js` - Custom key event handlers
+- **Settings Management**: Chrome sync storage for key preferences
 
 ## 📋 Browser Compatibility
 
@@ -145,8 +120,9 @@ netflix-speed-boost/           # GitHub repository root
 ### Extension not working?
 1. **Refresh the page**: Press F5 or Cmd/Ctrl+R
 2. **Check video is playing**: The extension only works on active videos
-3. **Hold on the right side**: Remember to hold on the right third of the screen
-4. **Check browser console**: Open DevTools (F12) to see if there are any errors
+3. **Try both methods**: Hold on the right third of the screen OR hold your custom key
+4. **Check key binding**: Make sure your custom key is set correctly in settings
+5. **Check browser console**: Open DevTools (F12) to see if there are any errors
 
 ### Speed stuck after release?
 This should never happen, but if it does:
@@ -157,6 +133,14 @@ This should never happen, but if it does:
 Make sure you're not holding over Netflix's control bar. The extension automatically detects and ignores control elements.
 
 ## 📝 Changelog
+
+### Version 1.1.0 (Latest)
+- **NEW**: Customizable key binding system (default: 'L' key)
+- **NEW**: Interactive key capture interface in settings
+- **NEW**: Smart key validation to prevent conflicts
+- **IMPROVED**: Dual activation methods (click + key hold)
+- **IMPROVED**: Better user experience with flexible key options
+- **FIXED**: Resolved conflict with Netflix's spacebar play/pause functionality
 
 ### Version 1.0.0 (2025-10-04)
 - Initial release
@@ -200,3 +184,4 @@ If you find this extension useful, please:
 ---
 
 **Made with ❤️ for better Netflix viewing**
+
