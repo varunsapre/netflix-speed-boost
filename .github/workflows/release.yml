@@ -23,14 +23,20 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/v}"
           
           # Extract the changelog section for this version
-          CHANGELOG_FILE="netflix-speed-boost/docs/CHANGELOG.md"
+          CHANGELOG_FILE="docs/CHANGELOG.md"
           
-          # Find the section for this version and extract until the next version or end
-          CHANGELOG_CONTENT=$(awk "/## \[$VERSION\]/{flag=1; next} /## \[/{flag=0} flag" "$CHANGELOG_FILE")
-          
-          # If changelog is empty, use a default message
-          if [ -z "$CHANGELOG_CONTENT" ]; then
-            CHANGELOG_CONTENT="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/netflix-speed-boost/docs/CHANGELOG.md) for details."
+          # Check if changelog file exists
+          if [ ! -f "$CHANGELOG_FILE" ]; then
+            echo "Changelog file not found at $CHANGELOG_FILE"
+            CHANGELOG_CONTENT="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) for details."
+          else
+            # Find the section for this version and extract until the next version or end
+            CHANGELOG_CONTENT=$(awk "/## \[$VERSION\]/{flag=1; next} /## \[/{flag=0} flag" "$CHANGELOG_FILE")
+            
+            # If changelog is empty, use a default message
+            if [ -z "$CHANGELOG_CONTENT" ]; then
+              CHANGELOG_CONTENT="See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) for details."
+            fi
           fi
           
           # Save to output (handle multiline)
@@ -88,6 +94,17 @@ jobs:
             4. Enable "Developer mode" in the top right
             5. Click "Load unpacked"
             6. Select the extracted folder
+            
+            ---
+            
+            ### 🎯 Key Features
+            - Hold on the right side of video OR press custom key to speed boost
+            - Customizable speeds from 1.25× to 5×
+            - Beautiful wave animations
+            - Works in fullscreen
+            - Privacy-first (no tracking, no data collection)
+            
+            ---
             
             **Full Changelog**: https://github.com/${{ github.repository }}/blob/main/netflix-speed-boost/docs/CHANGELOG.md
           draft: false
