@@ -5,6 +5,30 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-04
+
+### Added
+- **Customizable Key Binding System**: Set any key as your speed boost trigger (default: 'L' key)
+- **Interactive Key Capture Interface**: Click "Set Key" to capture any key press in settings
+- **Netflix Key Conflict Prevention**: Smart validation prevents selecting Netflix's native keys
+- **Key Conflict Warning**: Visual feedback when attempting to use conflicting keys
+- **Dual Activation Methods**: Both click-and-hold and custom key hold supported simultaneously
+
+### Changed
+- Replaced spacebar activation with customizable key binding to avoid Netflix play/pause conflict
+- Improved settings UI with key binding section
+- Enhanced user experience with flexible key binding options
+
+### Fixed
+- Resolved conflict with Netflix's spacebar play/pause functionality
+- Improved key validation to prevent conflicts with input fields and modifier keys
+
+### Technical
+- Added key capture system with global event listeners
+- Implemented dynamic event binding for custom keys
+- Added Netflix native key detection and validation
+- Real-time settings updates without page reload
+
 ## [1.0.0] - 2025-10-04
 
 ### Added
