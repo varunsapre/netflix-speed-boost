@@ -1,7 +1,7 @@
 *This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
 
 ---
-# Netflix Speed Boost
+# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.0-blue)
 
 <div align="center">
   <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
@@ -9,7 +9,6 @@
 
 Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily speed up Netflix videos with a simple hold gesture.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
