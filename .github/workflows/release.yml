@@ -62,6 +62,13 @@ jobs:
           echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       
+      - name: Install ImageMagick
+        run: |
+          echo "📦 Installing ImageMagick for icon generation..."
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          echo "✅ ImageMagick installed successfully"
+      
       - name: Generate Icons
         run: |
           REPO_ROOT="${{ steps.repo_root.outputs.ROOT }}"

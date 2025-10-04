@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Chrome Extension Icon Generator
+# Chrome Extension Icon Generator (Cross-platform)
 # Usage: ./generate-icons.sh [source-image]
 # Example: ./generate-icons.sh assets/logo.png
+# Supports: macOS (sips) and Ubuntu/Linux (ImageMagick)
 
 set -e  # Exit on error
 
@@ -20,20 +21,52 @@ fi
 # Target directory for generated icons (when called from repository root)
 TARGET_DIR="assets/icons"
 
+# Create target directory if it doesn't exist
+mkdir -p "$TARGET_DIR"
+
 echo "🎨 Generating Chrome extension icons from '$SOURCE'..."
 echo ""
 
-# Generate 16x16 icon
-echo "📦 Creating icon16.png (16x16)..."
-sips -z 16 16 "$SOURCE" --out "$TARGET_DIR/icon16.png" > /dev/null 2>&1
-
-# Generate 48x48 icon
-echo "📦 Creating icon48.png (48x48)..."
-sips -z 48 48 "$SOURCE" --out "$TARGET_DIR/icon48.png" > /dev/null 2>&1
-
-# Generate 128x128 icon
-echo "📦 Creating icon128.png (128x128)..."
-sips -z 128 128 "$SOURCE" --out "$TARGET_DIR/icon128.png" > /dev/null 2>&1
+# Check for available image conversion tools
+if command -v convert >/dev/null 2>&1; then
+    # Use ImageMagick (available on Ubuntu)
+    echo "📦 Using ImageMagick for icon generation..."
+    
+    # Generate 16x16 icon
+    echo "📦 Creating icon16.png (16x16)..."
+    convert "$SOURCE" -resize 16x16 "$TARGET_DIR/icon16.png"
+    
+    # Generate 48x48 icon
+    echo "📦 Creating icon48.png (48x48)..."
+    convert "$SOURCE" -resize 48x48 "$TARGET_DIR/icon48.png"
+    
+    # Generate 128x128 icon
+    echo "📦 Creating icon128.png (128x128)..."
+    convert "$SOURCE" -resize 128x128 "$TARGET_DIR/icon128.png"
+    
+elif command -v sips >/dev/null 2>&1; then
+    # Use sips (macOS)
+    echo "📦 Using sips for icon generation..."
+    
+    # Generate 16x16 icon
+    echo "📦 Creating icon16.png (16x16)..."
+    sips -z 16 16 "$SOURCE" --out "$TARGET_DIR/icon16.png" > /dev/null 2>&1
+    
+    # Generate 48x48 icon
+    echo "📦 Creating icon48.png (48x48)..."
+    sips -z 48 48 "$SOURCE" --out "$TARGET_DIR/icon48.png" > /dev/null 2>&1
+    
+    # Generate 128x128 icon
+    echo "📦 Creating icon128.png (128x128)..."
+    sips -z 128 128 "$SOURCE" --out "$TARGET_DIR/icon128.png" > /dev/null 2>&1
+    
+else
+    echo "❌ Error: No image conversion tool found!"
+    echo "Please install ImageMagick (Ubuntu/Linux) or ensure sips is available (macOS)"
+    echo "Ubuntu: sudo apt-get install imagemagick"
+    echo "macOS: sips should be available by default"
+    exit 1
+fi
 
 echo ""
 echo "✅ Successfully generated all icons in $TARGET_DIR/"
