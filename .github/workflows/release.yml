@@ -62,33 +62,6 @@ jobs:
           echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       
-      - name: Install ImageMagick
-        run: |
-          echo "📦 Installing ImageMagick for icon generation..."
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-          echo "✅ ImageMagick installed successfully"
-      
-      - name: Generate Icons
-        run: |
-          REPO_ROOT="${{ steps.repo_root.outputs.ROOT }}"
-          echo "🎨 Generating Chrome extension icons..."
-          echo "Repository root: $REPO_ROOT"
-          
-          # Check if logo exists
-          LOGO_FILE="$REPO_ROOT/assets/logo.png"
-          if [ ! -f "$LOGO_FILE" ]; then
-            echo "⚠️ Warning: Logo not found at $LOGO_FILE"
-            echo "Skipping icon generation..."
-          else
-            echo "✅ Logo found, generating icons..."
-            
-            # Make script executable and run from repository root
-            chmod +x "$REPO_ROOT/.github/workflows/scripts/generate-icons.sh"
-            "$REPO_ROOT/.github/workflows/scripts/generate-icons.sh"
-            echo "✅ Icons generated successfully"
-          fi
-      
       - name: Build Chrome package
         run: |
           REPO_ROOT="${{ steps.repo_root.outputs.ROOT }}"
