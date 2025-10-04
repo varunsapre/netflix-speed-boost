@@ -37,7 +37,7 @@
 ## Development Context
 - Production-ready Chrome extension
 - Comprehensive documentation in `/docs/`
-- Icon generation scripts in `/scripts/`
+- Icon generation scripts in `.github/workflows/scripts/` (icons generated during release)
 - Publishing guides and checklists included
 - MIT licensed, open source
 
@@ -46,6 +46,6 @@
 - Update settings UI → Edit `popup.html`/`popup.js`
 - Change visual feedback → Modify CSS in `content.js`
 - Update permissions → Edit `manifest.json`
-- Regenerate icons → Run `scripts/generate-icons.sh`
+- Regenerate icons → Run `.github/workflows/scripts/generate-icons.sh` (icons auto-generated during release)
 - Change key binding system → Edit key capture logic in `popup.js`
 - Modify key handling → Edit `handleCustomKeyDown/Up` functions in `content.js`

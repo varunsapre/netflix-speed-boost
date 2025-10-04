@@ -2,23 +2,23 @@
 
 # Chrome Extension Icon Generator
 # Usage: ./generate-icons.sh [source-image]
-# Example: ./generate-icons.sh netflix-speed-boost/logo.png
+# Example: ./generate-icons.sh assets/logo.png
 
 set -e  # Exit on error
 
-# Default source image
-SOURCE="${1:-../assets/logo.png}"
+# Default source image (when called from repository root)
+SOURCE="${1:-assets/logo.png}"
 
 # Check if source file exists
 if [ ! -f "$SOURCE" ]; then
     echo "❌ Error: Source image '$SOURCE' not found!"
     echo "Usage: ./generate-icons.sh [source-image]"
-    echo "Example: ./generate-icons.sh ../assets/logo.png"
+    echo "Example: ./generate-icons.sh assets/logo.png"
     exit 1
 fi
 
-# Target directory for generated icons
-TARGET_DIR="../assets/icons"
+# Target directory for generated icons (when called from repository root)
+TARGET_DIR="assets/icons"
 
 echo "🎨 Generating Chrome extension icons from '$SOURCE'..."
 echo ""
@@ -44,4 +44,3 @@ echo "   - $TARGET_DIR/icon48.png  (48x48)   - Extensions page & popup"
 echo "   - $TARGET_DIR/icon128.png (128x128) - Chrome Web Store & options page"
 echo ""
 echo "🚀 Reload your extension in chrome://extensions/ to see the changes!"
-

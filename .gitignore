@@ -27,6 +27,9 @@ Temporary Items
 *.crx
 *.pem
 
+# Generated icons (created during release process)
+assets/icons/
+
 # Node modules (if you ever add build tools)
 node_modules/
 npm-debug.log*

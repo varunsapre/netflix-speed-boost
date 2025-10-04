@@ -97,29 +97,6 @@ Make sure you're not holding over Netflix's control bar. The extension automatic
 - macOS/Linux (for icon generation script)
 - `sips` command-line tool (included on macOS)
 
-### Regenerating Icons
-```bash
-./scripts/generate-icons.sh assets/logo.png
-```
-
-### Building for Production
-```bash
-# Create Chrome Web Store package
-./scripts/generate-chrome-pkg.sh
-```
-
-## 📝 Changelog
-
-### Version 1.0.0 (2025-10-04)
-- Initial release
-- Customizable speed boost (1.25× to 5×)
-- Wave animation visual feedback
-- Optional text speed indicator
-- Fullscreen support
-- Settings sync across devices
-- Smart control detection
-- Production-ready code with proper error handling
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.

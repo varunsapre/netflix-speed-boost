@@ -7,19 +7,19 @@ set -e  # Exit on error
 
 echo "📦 Creating Chrome Web Store package..."
 
-cd ..
-
+# Script assumes it's being called from repository root
 # Get version from manifest.json
 VERSION=$(grep '"version"' manifest.json | sed 's/.*"version": "\([^"]*\)".*/\1/')
 PACKAGE_NAME="netflix-speed-boost-v${VERSION}.zip"
 
 # Create ZIP with only extension files
+# Include icons but exclude other assets
 zip -r "$PACKAGE_NAME" . \
   -x "*.git*" \
   -x "*.DS_Store" \
-  -x "assets/*" \
+  -x "assets/logo.png" \
   -x "docs/*" \
-  -x "scripts/*" \
+  -x ".github/*" \
   -x "*.md" \
   -x "README.md"
 
