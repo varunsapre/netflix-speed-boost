@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netflix Speed Boost</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      padding: 0;
+    }
+
+    .header {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(229, 62, 62, 0.3);
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: left;
+    }
+
+    h1 {
+      font-size: 16px;
+      color: white;
+      margin: 0 0 2px 0;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .content {
+      background: #1a202c;
+      padding: 20px;
+    }
+
+    .option-group {
+      margin-bottom: 20px;
+    }
+
+    .option-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #fc8181;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .description {
+      font-size: 11px;
+      color: #a0aec0;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .speed-slider-container {
+      padding: 10px 0;
+    }
+
+    .speed-value-display {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fc8181;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(252, 129, 129, 0.5);
+    }
+
+    .speed-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #2d3748;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      margin-bottom: 12px;
+      border: 1px solid #e53e3e;
+      scroll-snap-type: x mandatory;
+      transition: all 0.2s ease-out;
+    }
+
+    .speed-slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.6);
+      transition: all 0.2s;
+    }
+
+    .speed-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(229, 62, 62, 0.8);
+    }
+
+    .speed-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 12px rgba(229, 62, 62, 0.6);
+      transition: all 0.2s;
+    }
+
+    .speed-slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(229, 62, 62, 0.8);
+    }
+
+    .speed-marks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #a0aec0;
+      padding: 0 2px;
+    }
+
+    .speed-mark {
+      text-align: center;
+      flex: 1;
+    }
+
+    .toggle-button {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #4a5568;
+      border-radius: 8px;
+      background: #2d3748;
+      color: #718096;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-align: left;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-button:last-child {
+      margin-bottom: 0;
+    }
+
+    .toggle-button:hover {
+      border-color: #5a6678;
+    }
+
+    .toggle-button.active {
+      background: rgba(229, 62, 62, 0.15);
+      border-color: #e53e3e;
+      color: #fc8181;
+    }
+
+    .toggle-button.active:hover {
+      background: rgba(229, 62, 62, 0.2);
+      border-color: #fc8181;
+    }
+
+    .toggle-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4a5568;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .toggle-button.active .toggle-indicator {
+      background: #e53e3e;
+      box-shadow: 0 0 8px rgba(229, 62, 62, 0.5);
+    }
+
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(229, 62, 62, 0.2);
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: 2px solid #e53e3e;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      background: transparent;
+      color: #fc8181;
+    }
+
+    .reset-btn:hover {
+      background: rgba(229, 62, 62, 0.1);
+      box-shadow: 0 0 15px rgba(229, 62, 62, 0.3);
+      transform: translateY(-1px);
+    }
+
+
+    .divider {
+      height: 1px;
+      background: rgba(229, 62, 62, 0.2);
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="assets/icons/icon48.png" alt="Logo" class="logo">
+    <div class="header-text">
+      <h1>Netflix Speed Boost</h1>
+    </div>
+  </div>
+
+  <div class="content">
+    <form id="options-form">
+      <div class="option-group">
+        <label>Speed Boost Amount</label>
+        <div class="description">Drag the slider to select your preferred speed</div>
+        <div class="speed-slider-container">
+          <div class="speed-value-display" id="speed-value-display">1.5×</div>
+              <input type="range" id="speed-slider" class="speed-slider" min="0" max="8" step="0.01" value="1">
+          <div class="speed-marks">
+            <span class="speed-mark">1.25×</span>
+            <span class="speed-mark">1.5×</span>
+            <span class="speed-mark">1.75×</span>
+            <span class="speed-mark">2×</span>
+            <span class="speed-mark">2.25×</span>
+            <span class="speed-mark">2.5×</span>
+            <span class="speed-mark">2.75×</span>
+            <span class="speed-mark">3×</span>
+            <span class="speed-mark">5×</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="option-group">
+        <label>Visual Options</label>
+        <button type="button" class="toggle-button active" id="toggle-animation">
+          <span class="toggle-indicator"></span>
+          <span>Wave animation</span>
+        </button>
+        <button type="button" class="toggle-button" id="toggle-text">
+          <span class="toggle-indicator"></span>
+          <span>Speed text indicator</span>
+        </button>
+        <input type="checkbox" id="enable-animation" checked>
+        <input type="checkbox" id="enable-text">
+      </div>
+
+      <div class="button-group">
+        <button type="button" id="reset-btn" class="reset-btn">Reset to Defaults</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
