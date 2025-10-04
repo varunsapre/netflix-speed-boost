@@ -250,6 +250,22 @@ function stopKeyListening() {
 }
 
 /**
+ * Netflix's native key bindings that should be avoided
+ */
+const NETFLIX_NATIVE_KEYS = {
+  'Space': 'Play/Pause',
+  'Enter': 'Play/Pause',
+  'KeyF': 'Full screen',
+  'Escape': 'Exit full screen',
+  'ArrowLeft': 'Rewind 10 seconds',
+  'ArrowRight': 'Fast forward 10 seconds',
+  'ArrowUp': 'Increase volume',
+  'ArrowDown': 'Decrease volume',
+  'KeyM': 'Mute',
+  'KeyS': 'Skip intro'
+};
+
+/**
  * Handle key capture during key binding setup
  * @param {KeyboardEvent} e - Keydown event
  */
@@ -262,8 +278,16 @@ function handleKeyCapture(e) {
     return;
   }
   
-  // Update the key binding
+  // Check if key conflicts with Netflix's native bindings
   const keyCode = e.code;
+  const keyName = e.key;
+  
+  if (NETFLIX_NATIVE_KEYS[keyCode] || NETFLIX_NATIVE_KEYS[keyName]) {
+    showKeyConflictMessage(keyCode, keyName);
+    return;
+  }
+  
+  // Update the key binding
   const hiddenInput = document.getElementById('custom-key');
   hiddenInput.value = keyCode;
   
@@ -272,6 +296,58 @@ function handleKeyCapture(e) {
   
   // Save settings
   saveCurrentSettings();
+  
+  // Stop listening
+  stopKeyListening();
+}
+
+/**
+ * Show conflict message for Netflix native keys
+ * @param {string} keyCode - The conflicting key code
+ * @param {string} keyName - The conflicting key name
+ */
+function showKeyConflictMessage(keyCode, keyName) {
+  const conflictKey = NETFLIX_NATIVE_KEYS[keyCode] || NETFLIX_NATIVE_KEYS[keyName];
+  const keyDisplay = keyCodeToChar(keyCode);
+  
+  // Create or update conflict message
+  let conflictMsg = document.getElementById('key-conflict-message');
+  if (!conflictMsg) {
+    conflictMsg = document.createElement('div');
+    conflictMsg.id = 'key-conflict-message';
+    conflictMsg.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(229, 62, 62, 0.95);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      z-index: 10000;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      max-width: 400px;
+      line-height: 1.4;
+    `;
+    document.body.appendChild(conflictMsg);
+  }
+  
+  conflictMsg.innerHTML = `
+    <div>⚠️ <strong> ${keyDisplay}</strong> key cannot be reassigned!</div>
+  `;
+  
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    if (conflictMsg && conflictMsg.parentNode) {
+      conflictMsg.remove();
+    }
+  }, 3000);
   
   // Stop listening
   stopKeyListening();
