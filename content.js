@@ -131,7 +131,7 @@
     
     const indicator = document.createElement('div');
     indicator.id = 'netflix-speed-indicator';
-    indicator.textContent = `${BOOST}×`;
+    indicator.textContent = `${settings.speedBoost}×`;
     document.body.appendChild(indicator);
     return indicator;
   }
