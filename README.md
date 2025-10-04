@@ -6,6 +6,10 @@
 ---
 # Netflix Speed Boost
 
+<div align="center">
+  <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
+</div>
+
 A Chrome extension that allows you to temporarily boost Netflix playback speed by holding down on the video area.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
