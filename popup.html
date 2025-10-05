@@ -351,8 +351,7 @@
           <button type="button" id="key-binding-btn" class="key-binding-btn">Set Key</button>
         </div>
         <div class="key-binding-note">
-          <small>⚠️ Avoid native key bindings:</small><br>
-          <small> Space, Enter, F, Esc, Arrow keys, M, S</small>
+          <small>⚠️ Avoid native key bindings</small>
         </div>
         <input type="hidden" id="custom-key" value="KeyL">
       </div>
@@ -361,16 +360,17 @@
 
       <div class="option-group">
         <label>Visual Effects</label>
-        <button type="button" class="toggle-button active" id="toggle-animation">
-          <span class="toggle-indicator"></span>
-          <span>Wave animation</span>
-        </button>
-        <button type="button" class="toggle-button" id="toggle-text">
+        <button type="button" class="toggle-button active" id="toggle-text">
           <span class="toggle-indicator"></span>
           <span>Speed text indicator</span>
         </button>
-        <input type="checkbox" id="enable-animation" checked>
-        <input type="checkbox" id="enable-text">
+        <button type="button" class="toggle-button" id="toggle-animation">
+          <span class="toggle-indicator"></span>
+          <span>Wave animation</span>
+        </button>
+        
+        <input type="checkbox" id="enable-text" checked>
+        <input type="checkbox" id="enable-animation">
       </div>
 
       

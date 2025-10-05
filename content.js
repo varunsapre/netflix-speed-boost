@@ -20,8 +20,8 @@
   let settings = {
     speedBoost: 1.5,        // Speed multiplier when holding
     customKey: 'KeyL',      // Custom key binding for speed boost
-    enableAnimation: true,   // Show wave animation
-    enableText: false        // Show speed text indicator
+    enableAnimation: false,  // Show wave animation
+    enableText: true         // Show speed text indicator
   };
   
   // State management
@@ -164,11 +164,11 @@
     
     // Show text indicator if enabled
     if (settings.enableText) {
-      createTextIndicator(clickY);
+      createTextIndicator();
     }
   }
   
-  function createTextIndicator(clickY) {
+  function createTextIndicator() {
     // Remove any existing text indicator
     const existingText = document.getElementById('netflix-speed-text-indicator');
     if (existingText) {
@@ -177,11 +177,11 @@
     
     const textIndicator = document.createElement('div');
     textIndicator.id = 'netflix-speed-text-indicator';
-    textIndicator.textContent = `${settings.speedBoost}×`;
+    textIndicator.textContent = `${settings.speedBoost}× ▶▶`;
     textIndicator.style.cssText = `
       position: fixed !important;
       right: 30px !important;
-      top: ${clickY}px !important;
+      top: 50% !important;
       transform: translateY(-50%) !important;
       color: rgba(255, 255, 255, 0.9) !important;
       font-family: 'Netflix Sans', Arial, sans-serif !important;
@@ -253,7 +253,7 @@
     for (let i = 0; i < 3; i++) {
       const wave = document.createElement('div');
       wave.className = 'netflix-speed-wave';
-      const maxOpacity = 0.1 + (i * 0.1); // 0.1, 0.2, 0.3
+      const maxOpacity = 0.05 + (i * 0.05); // 0.05, 0.1, 0.15
       const delay = i * 0.25; // Stagger delays: 0s, 0.25s, 0.5s
       const leftPosition = 60 + (i * 40); // 60px, 100px, 140px from right edge
       

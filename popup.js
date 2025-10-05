@@ -20,8 +20,8 @@
 const DEFAULT_SETTINGS = {
   speedBoost: 1.5,
   customKey: 'KeyL',
-  enableAnimation: true,
-  enableText: false
+  enableAnimation: false,
+  enableText: true
 };
 
 /**
