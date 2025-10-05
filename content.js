@@ -5,7 +5,7 @@
  * Users hold on the right third of the video area to activate speed boost,
  * and release to restore normal playback speed.
  * 
- * @version 1.1.2
+ * @version 1.1.3
  * @author Varun Sapre
  */
 
@@ -26,6 +26,7 @@
   
   // State management
   let settingsLoaded = false;
+  let isActive = false;
   
   // ============================================================================
   // SETTINGS MANAGEMENT
@@ -594,6 +595,11 @@
       return;
     }
     
+    // Don't activate if extension is not active
+    if (!isActive) {
+      return;
+    }
+    
     // Don't activate if user is typing in input fields
     const target = e.target;
     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
@@ -653,6 +659,11 @@
       return;
     }
     
+    // Don't activate if extension is not active
+    if (!isActive) {
+      return;
+    }
+    
     // Prevent default key behavior
     e.preventDefault();
     
@@ -706,19 +717,10 @@
   
   /**
    * Handle route changes in Netflix's single-page app
-   * Resets state and re-detects video element
+   * Now uses the unified navigation handler
    */
   function onRouteChange(){ 
-    endHold(); 
-    
-    // Only continue if we're on a watch page
-    if (!isWatchPage()) {
-      return;
-    }
-    
-    setTimeout(() => { 
-      activeVideo = getActiveVideo(); 
-    }, 500); 
+    handleNavigation();
   }
   
   /**
@@ -739,11 +741,12 @@
   /**
    * Observe DOM changes to detect new video elements
    * Netflix dynamically creates/destroys video elements
+   * Only runs when extension is active
    */
   function observe(){
     const mo = new MutationObserver(()=>{ 
-      // Only observe on watch pages
-      if (!isWatchPage()) {
+      // Only update active video if extension is active
+      if (!isActive) {
         return;
       }
       
@@ -768,25 +771,107 @@
   }
 
   /**
+   * Activate the extension on watch pages
+   */
+  function activateExtension() {
+    if (isActive) return;
+    
+    console.log('Netflix Speed Boost: Activating on watch page');
+    isActive = true;
+    bindPress(true); 
+    bindRelease(true); 
+    bindClickBlocker(true); 
+    bindCustomKeyEvents();
+    observe();
+    activeVideo = getActiveVideo();
+  }
+
+  /**
+   * Deactivate the extension on non-watch pages
+   */
+  function deactivateExtension() {
+    if (!isActive) return;
+    
+    console.log('Netflix Speed Boost: Deactivating on browse page');
+    isActive = false;
+    endHold(); // Stop any active speed boost
+    bindPress(false); 
+    bindRelease(false); 
+    bindClickBlocker(false); 
+    // Note: We don't unbind custom key events here as they're global
+    activeVideo = null;
+  }
+
+  /**
+   * Set up navigation detection using multiple event listeners
+   * No loops, pure event-driven
+   */
+  function setupNavigationDetection() {
+    // 1. Listen for all possible navigation events
+    window.addEventListener('popstate', () => {
+      setTimeout(handleNavigation, 100);
+    });
+    
+    // 2. Listen for hash changes
+    window.addEventListener('hashchange', () => {
+      setTimeout(handleNavigation, 100);
+    });
+    
+    // 3. Listen for Netflix's custom events
+    window.addEventListener('nfh-route', () => {
+      setTimeout(handleNavigation, 100);
+    });
+    
+    // 4. Listen for DOM mutations that might indicate navigation
+    const observer = new MutationObserver((mutations) => {
+      // Check if URL changed during mutations
+      const currentUrl = window.location.href;
+      if (currentUrl !== setupNavigationDetection.lastUrl) {
+        setupNavigationDetection.lastUrl = currentUrl;
+        setTimeout(handleNavigation, 100);
+      }
+    });
+    
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+    
+    // Store initial URL
+    setupNavigationDetection.lastUrl = window.location.href;
+  }
+
+  /**
+   * Handle navigation events
+   */
+  function handleNavigation() {
+    if (isWatchPage() && !isActive) {
+      // Small delay to let Netflix load the video
+      setTimeout(() => {
+        activateExtension();
+      }, 500);
+    } else if (!isWatchPage() && isActive) {
+      deactivateExtension();
+    }
+  }
+
+  /**
    * Initialize the extension
    * Loads settings, binds events, and sets up observers
    */
   function init(){
-    // Only initialize on watch pages
-    if (!isWatchPage()) {
-      return;
-    }
-    
-    // Load settings first, then initialize
+    // Load settings first, then check if we should activate
     loadSettings(() => {
-      bindPress(true); 
-      bindRelease(true); 
-      bindClickBlocker(true); 
-      bindCustomKeyEvents();
-      patchHistory(); 
-      observe();
-      activeVideo = getActiveVideo();
+      patchHistory(); // Always set up SPA navigation detection
       addEventListener('beforeunload', endHold, {passive:true});
+      
+      // Set up efficient navigation detection
+      setupNavigationDetection();
+      
+      // Check if we should activate on current page
+      if (isWatchPage()) {
+        activateExtension();
+      }
     });
   }
 

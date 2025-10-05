@@ -5,6 +5,26 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-01-27
+
+### Fixed
+- **SPA Navigation**: Extension now works seamlessly with Netflix's single-page application navigation
+- **Browse to Watch**: Extension activates automatically when navigating from browse to watch pages
+- **Watch to Browse**: Extension deactivates automatically when navigating away from watch pages
+- **No Refresh Required**: Extension works immediately without page refresh
+
+### Improved
+- **Event-Driven Navigation**: Replaced inefficient polling with smart event listeners
+- **Multiple Detection Methods**: Uses popstate, hashchange, custom events, and DOM mutations
+- **Better Performance**: No background loops or periodic checking
+- **Cleaner Logging**: Minimal console output with essential activation/deactivation messages
+
+### Technical
+- Enhanced navigation detection with multiple event listeners
+- Improved URL change detection via DOM mutations
+- Streamlined activation/deactivation logic
+- Removed all polling mechanisms for better performance
+
 ## [1.1.2] - 2025-01-27
 
 ### Fixed
