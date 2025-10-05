@@ -1,7 +1,7 @@
 *This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
 
 ---
-# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.3-blue)
+# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.4-blue)
 
 <div align="center">
   <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
@@ -15,7 +15,7 @@ Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily sp
 ## ✨ Why You'll Love This
 
 - **🎬 Skip the Boring Parts**: Hold and speed through slow scenes, intros, or recaps
-- **⚡ Super Easy**: Just hold on the right side of the video or press your custom key
+- **⚡ Super Easy**: Just hold anywhere on the screen or press your custom key
 - **🎯 Smart & Safe**: Won't mess with Netflix's controls - works perfectly alongside them
 - **🎨 Looks Great**: Beautiful wave animations show when you're speeding up
 - **⚙️ Your Way**: Pick any speed from 1.25× to 5× and any key you want
@@ -40,11 +40,11 @@ Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily sp
 1. **Go to Netflix**: Open any show or movie
 2. **Set Your Speed** (optional): Click the extension icon to pick your favorite speed and key
 3. **Speed It Up**: When you hit a boring part:
-   - Hold on the **right side** of the video, OR
+   - Hold **anywhere on the screen**, OR
    - Hold your custom key (default: 'L')
 4. **Let Go**: Release to instantly return to normal speed
 
-**💡 Pro Tip**: It only works on the right side or with your key, so you won't accidentally mess up Netflix's controls!
+**💡 Pro Tip**: It works anywhere on the screen except Netflix's controls, so you won't accidentally mess up Netflix's interface!
 
 ## ⚙️ Customize Your Experience
 
@@ -131,7 +131,16 @@ Make sure you're not holding over Netflix's control bar. The extension is smart 
 
 ## 📝 Changelog
 
-### Version 1.1.3 (Latest)
+### Version 1.1.4 (Latest)
+- **NEW**: Full screen clickable area - works anywhere on screen, not just right third
+- **NEW**: Enhanced control detection - better protection of Netflix's interface
+- **NEW**: Unicode speed indicator with ▶▶ symbol for better visual feedback
+- **IMPROVED**: Speed indicator positioned in center-right for better visibility
+- **CHANGED**: Default settings - speed indicator enabled, wave animation disabled
+- **FIXED**: Passive event listener errors - no more console errors
+- **FIXED**: Control bar interaction - more reliable clicking on Netflix controls
+
+### Version 1.1.3
 - **FIXED**: SPA navigation - extension now works seamlessly with Netflix's single-page navigation
 - **FIXED**: Browse to watch navigation - extension activates automatically without refresh
 - **FIXED**: Watch to browse navigation - extension deactivates automatically

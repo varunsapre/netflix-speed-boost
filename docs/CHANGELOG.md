@@ -5,6 +5,24 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2025-01-27
+
+### Added
+- **Full Screen Clickable Area**: Speed boost now works anywhere on the screen, not just the right third
+- **Enhanced Control Detection**: Improved detection of Netflix's control elements to prevent interference
+- **Unicode Speed Indicator**: Added ▶▶ symbol to speed indicator for better visual feedback
+- **Center-Right Positioning**: Speed indicator now appears in the center-right of the screen for better visibility
+
+### Changed
+- **Default Settings**: Speed text indicator is now enabled by default, wave animation is disabled
+- **Wave Animation Opacity**: Reduced opacity for subtler, less distracting animation
+- **Click Area Logic**: Removed right-third restriction, now works anywhere except Netflix controls
+
+### Fixed
+- **Passive Event Listener Errors**: Fixed "Unable to preventDefault" console errors
+- **Control Bar Interaction**: Improved reliability when clicking on Netflix's bottom control bar
+- **Event Listener Configuration**: All event listeners now properly configured for preventDefault usage
+
 ## [1.1.3] - 2025-01-27
 
 ### Fixed

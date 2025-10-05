@@ -361,10 +361,23 @@
     '[data-uia*="seek-bar"]',
     '[data-uia*="scrubber-bar"]',
     '[role="slider"]',
-    // Netflix control containers
+    // Netflix control containers and bottom bar
     '.PlayerControlsNeo__core-controls',
     '.watch-video--controls-container',
     '.controls',
+    '.PlayerControlsNeo__bottom-controls',
+    '.PlayerControlsNeo__bottom-controls-container',
+    '.PlayerControlsNeo__control-bar',
+    '.PlayerControlsNeo__control-bar-container',
+    // Bottom control bar elements
+    '[data-uia*="control-bar"]',
+    '[data-uia*="bottom-controls"]',
+    '[data-uia*="player-controls"]',
+    // Any element with control-related data attributes
+    '[data-uia*="control"]',
+    '[data-uia*="button"]',
+    '[data-uia*="slider"]',
+    '[data-uia*="bar"]',
     '.control-bar'
   ].join(',');
 
@@ -409,7 +422,7 @@
   
   /**
    * Handle pointer down event to start speed boost timer
-   * Only activates on right third of screen, not on controls
+   * Activates anywhere on screen except Netflix controls
    * @param {PointerEvent} e - Pointer down event
    */
   function startHold(e) {
@@ -417,28 +430,9 @@
       return;
     }
     
-    // Check if clicking on video element, its children, or video overlays
-    const isVideoElement = e.target.tagName === 'VIDEO';
-    const isVideoChild = e.target.closest('video') !== null;
-    const isVideoOverlay = e.target.closest('.watch-video--player-container') !== null;
-    const isVideoFlag = e.target.closest('.watch-video--flag-container') !== null;
-    const isSubtitles = e.target.closest('.player-timedtext') !== null;
-    
-    if (!isVideoElement && !isVideoChild && !isVideoOverlay && !isVideoFlag && !isSubtitles) {
-      return;
-    }
-    
+    // Check if clicking on Netflix controls - if so, don't activate speed boost
     if (isOverControls(e.target)) {
       return;
-    }
-    
-    // Check if click is in the right 1/3 of the screen
-    const clickX = e.clientX;
-    const screenWidth = window.innerWidth;
-    const rightThirdStart = (screenWidth * 2) / 3;
-    
-    if (clickX < rightThirdStart) {
-      return; // Only allow clicks in the right 1/3
     }
 
     const v = getActiveVideo();
@@ -466,7 +460,8 @@
     // Reset hold state and start timer
     isHold = false;
     
-    // Store click coordinates for animation (clickX already declared above)
+    // Store click coordinates for animation
+    const clickX = e.clientX;
     const clickY = e.clientY;
     
     holdTimer = setTimeout(() => {
@@ -549,7 +544,7 @@
   // EVENT BINDING
   // ============================================================================
   
-  const pressOpts = { capture: true, passive: true };
+  const pressOpts = { capture: true, passive: false };
   
   /**
    * Bind/unbind pointer down event listener
@@ -569,10 +564,10 @@
     const opts = { capture: true, passive: false };
     fn('pointerup', endHold, opts);
     fn('pointercancel', endHold, opts);
-    // These can stay passive since they don't need preventDefault
-    const passiveOpts = { capture: true, passive: true };
-    fn('mouseleave', endHold, passiveOpts);
-    fn('blur', endHold, passiveOpts);
+    // These need to be non-passive since endHold calls preventDefault
+    const nonPassiveOpts = { capture: true, passive: false };
+    fn('mouseleave', endHold, nonPassiveOpts);
+    fn('blur', endHold, nonPassiveOpts);
   }
   
   /**
@@ -863,7 +858,7 @@
     // Load settings first, then check if we should activate
     loadSettings(() => {
       patchHistory(); // Always set up SPA navigation detection
-      addEventListener('beforeunload', endHold, {passive:true});
+      addEventListener('beforeunload', endHold, {passive:false});
       
       // Set up efficient navigation detection
       setupNavigationDetection();
