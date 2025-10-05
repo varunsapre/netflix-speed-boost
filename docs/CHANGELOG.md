@@ -5,6 +5,21 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-01-27
+
+### Added
+- **Automatic Settings Initialization**: Extension now works immediately after installation without requiring popup interaction
+- **Playback State Validation**: Speed boost is now blocked when video is paused for better user experience
+
+### Fixed
+- **First Install Issue**: Resolved problem where extension required opening popup to activate on first install
+- **Paused Video Handling**: Prevented accidental speed boost activation on paused videos
+
+### Technical
+- Added automatic default settings persistence to Chrome storage on first run
+- Implemented video playback state checking in both mouse and keyboard handlers
+- Enhanced initialization flow for seamless first-time user experience
+
 ## [1.1.0] - 2025-10-04
 
 ### Added

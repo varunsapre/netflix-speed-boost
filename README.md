@@ -1,7 +1,7 @@
 *This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
 
 ---
-# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.0-blue)
+# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.1-blue)
 
 <div align="center">
   <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
@@ -131,7 +131,14 @@ Make sure you're not holding over Netflix's control bar. The extension is smart 
 
 ## 📝 Changelog
 
-### Version 1.1.0 (Latest)
+### Version 1.1.1 (Latest)
+- **NEW**: Automatic settings initialization - works immediately after installation
+- **NEW**: Playback state validation - prevents speed boost on paused videos
+- **IMPROVED**: Better first-time user experience
+- **FIXED**: Extension now works without opening popup on first install
+- **FIXED**: No more accidental speed boost on paused videos
+
+### Version 1.1.0
 - **NEW**: Customizable key binding system (default: 'L' key)
 - **NEW**: Interactive key capture interface in settings
 - **NEW**: Smart key validation to prevent conflicts
