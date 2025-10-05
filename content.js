@@ -33,13 +33,26 @@
   
   /**
    * Load user settings from Chrome sync storage
+   * Automatically saves default settings on first install
    * @param {Function} callback - Function to call after settings are loaded
    */
   function loadSettings(callback) {
     chrome.storage.sync.get(settings, (loadedSettings) => {
-      settings = { ...settings, ...loadedSettings };
-      settingsLoaded = true;
-      if (callback) callback();
+      // Check if this is the first time (no settings exist)
+      const hasExistingSettings = Object.keys(loadedSettings).length > 0;
+      
+      if (!hasExistingSettings) {
+        // First install - save default settings to storage
+        chrome.storage.sync.set(settings, () => {
+          settingsLoaded = true;
+          if (callback) callback();
+        });
+      } else {
+        // Settings exist - use loaded values
+        settings = { ...settings, ...loadedSettings };
+        settingsLoaded = true;
+        if (callback) callback();
+      }
     });
   }
   
@@ -431,6 +444,12 @@
     if (!v) {
       return;
     }
+    
+    // Don't allow speed boost if video is paused
+    if (v.paused) {
+      return;
+    }
+    
     activeVideo = v;
 
     // Don't start new timer if already holding
@@ -588,6 +607,12 @@
     if (!v) {
       return;
     }
+    
+    // Don't allow speed boost if video is paused
+    if (v.paused) {
+      return;
+    }
+    
     activeVideo = v;
 
     // Don't start new timer if already holding
