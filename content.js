@@ -710,6 +710,12 @@
    */
   function onRouteChange(){ 
     endHold(); 
+    
+    // Only continue if we're on a watch page
+    if (!isWatchPage()) {
+      return;
+    }
+    
     setTimeout(() => { 
       activeVideo = getActiveVideo(); 
     }, 500); 
@@ -736,6 +742,11 @@
    */
   function observe(){
     const mo = new MutationObserver(()=>{ 
+      // Only observe on watch pages
+      if (!isWatchPage()) {
+        return;
+      }
+      
       const v = getActiveVideo(); 
       if (v && v!==activeVideo) {
         activeVideo = v;
@@ -749,10 +760,23 @@
   // ============================================================================
   
   /**
+   * Check if we're on a Netflix watch page
+   * @returns {boolean} True if on a watch page
+   */
+  function isWatchPage() {
+    return window.location.pathname.startsWith('/watch/');
+  }
+
+  /**
    * Initialize the extension
    * Loads settings, binds events, and sets up observers
    */
   function init(){
+    // Only initialize on watch pages
+    if (!isWatchPage()) {
+      return;
+    }
+    
     // Load settings first, then initialize
     loadSettings(() => {
       bindPress(true); 
