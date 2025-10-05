@@ -4,7 +4,7 @@
  * This script manages the settings popup interface where users can customize
  * their speed boost preferences and visual options.
  * 
- * @version 1.1.1
+ * @version 1.1.2
  * @author Varun Sapre
  */
 

@@ -1,7 +1,7 @@
 *This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
 
 ---
-# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.1-blue)
+# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.2-blue)
 
 <div align="center">
   <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
@@ -131,7 +131,12 @@ Make sure you're not holding over Netflix's control bar. The extension is smart 
 
 ## 📝 Changelog
 
-### Version 1.1.1 (Latest)
+### Version 1.1.2 (Latest)
+- **FIXED**: Extension now only works on Netflix watch pages, not browse pages
+- **FIXED**: No more interference with video previews/trailers on browse pages
+- **IMPROVED**: Better scope control and performance
+
+### Version 1.1.1
 - **NEW**: Automatic settings initialization - works immediately after installation
 - **NEW**: Playback state validation - prevents speed boost on paused videos
 - **IMPROVED**: Better first-time user experience

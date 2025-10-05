@@ -5,6 +5,17 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-01-27
+
+### Fixed
+- **Scope Restriction**: Extension now only works on Netflix watch pages, not browse pages
+- **Browse Page Interference**: Prevented extension from triggering on video previews/trailers on browse pages
+
+### Technical
+- Added URL validation to ensure extension only initializes on `/watch/*` pages
+- Enhanced route change handling to respect page type boundaries
+- Improved DOM observer to only run on watch pages
+
 ## [1.1.1] - 2025-01-27
 
 ### Added

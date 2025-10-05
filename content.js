@@ -5,7 +5,7 @@
  * Users hold on the right third of the video area to activate speed boost,
  * and release to restore normal playback speed.
  * 
- * @version 1.1.1
+ * @version 1.1.2
  * @author Varun Sapre
  */
 
