@@ -1,11 +1,10 @@
 /**
- * Netflix Speed Boost - Content Script
+ * Netflix Speed Boost - Main Loader
  * 
- * This script enables temporary playback speed boosting on Netflix videos.
- * Users hold on the right third of the video area to activate speed boost,
- * and release to restore normal playback speed.
+ * This script detects the current streaming service and loads the appropriate module.
+ * It provides the core functionality that works across all supported services.
  * 
- * @version 1.1.3
+ * @version 1.1.4
  * @author Varun Sapre
  */
 
@@ -13,7 +12,7 @@
   'use strict';
   
   // ============================================================================
-  // SETTINGS & STATE
+  // CORE SETTINGS & STATE
   // ============================================================================
   
   // User settings with defaults
@@ -27,6 +26,7 @@
   // State management
   let settingsLoaded = false;
   let isActive = false;
+  let currentModule = null;
   
   // ============================================================================
   // SETTINGS MANAGEMENT
@@ -80,6 +80,80 @@
     }
   });
   
+  // ============================================================================
+  // MODULE DETECTION & LOADING
+  // ============================================================================
+  
+  /**
+   * Detect which streaming service module to load based on current URL
+   * @returns {string|null} Module name or null if unsupported
+   */
+  function detectStreamingService() {
+    const hostname = window.location.hostname;
+    
+    if (hostname === 'www.netflix.com') {
+      return 'netflix';
+    } else if (hostname === 'play.hbomax.com') {
+      return 'hbomax';
+    }
+    
+    return null;
+  }
+  
+  /**
+   * Load the appropriate module based on the detected streaming service
+   * @param {string} service - The streaming service name
+   */
+  function loadModule(service) {
+    // Check if we're already using the correct module
+    const currentService = getCurrentService();
+    if (currentService === service && currentModule) {
+      // Module already loaded (no log needed)
+      return;
+    }
+    
+    switch (service) {
+      case 'netflix':
+        if (window.NetflixModule) {
+          currentModule = window.NetflixModule;
+          console.log('Netflix Speed Boost: Netflix module loaded successfully');
+        } else {
+          console.error('Netflix Speed Boost: Netflix module not found');
+        }
+        break;
+        
+      case 'hbomax':
+        if (window.HBOMaxModule) {
+          currentModule = window.HBOMaxModule;
+          console.log('Netflix Speed Boost: HBO Max module loaded successfully');
+        } else {
+          console.error('Netflix Speed Boost: HBO Max module not found');
+        }
+        break;
+        
+      default:
+        console.log('Netflix Speed Boost: Unsupported streaming service');
+        currentModule = null;
+    }
+  }
+  
+  /**
+   * Get the current streaming service based on the loaded module
+   * @returns {string|null} Current service name or null
+   */
+  function getCurrentService() {
+    if (currentModule === window.NetflixModule) {
+      return 'netflix';
+    } else if (currentModule === window.HBOMaxModule) {
+      return 'hbomax';
+    }
+    return null;
+  }
+  
+  // ============================================================================
+  // CORE FUNCTIONALITY (WORKS ACROSS ALL SERVICES)
+  // ============================================================================
+  
   let restoreRate = null;      // Playback rate to restore when releasing
   let activeVideo = null;      // Currently active video element
   let holdTimer = null;        // Timer for detecting hold vs click
@@ -89,72 +163,78 @@
   // Constants
   const HOLD_THRESHOLD = 150;  // Milliseconds to distinguish hold from click
   
-  // ============================================================================
-  // VISUAL FEEDBACK
-  // ============================================================================
-  
   /**
-   * Create the speed indicator element (legacy - currently unused)
-   * Kept for potential future enhancements
+   * Check if an element is visible in the viewport
+   * @param {HTMLElement} el - Element to check
+   * @returns {boolean} True if element is visible
    */
-  function createSpeedIndicator() {
-    // Add CSS animation styles
-    if (!document.getElementById('netflix-speed-styles')) {
-      const style = document.createElement('style');
-      style.id = 'netflix-speed-styles';
-      style.textContent = `
-        @keyframes slideDown {
-          from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-          to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateX(-50%) translateY(0); opacity: 1; }
-          to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-        }
-        #netflix-speed-indicator {
-          position: fixed !important;
-          top: 20px !important;
-          left: 50% !important;
-          transform: translateX(-50%) !important;
-          background: rgba(255, 255, 255, 0.2) !important;
-          color: rgba(255, 255, 255, 0.9) !important;
-          padding: 12px 24px !important;
-          border-radius: 25px !important;
-          font-family: 'Netflix Sans', Arial, sans-serif !important;
-          font-size: 20px !important;
-          font-weight: 600 !important;
-          z-index: 2147483647 !important;
-          display: none;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-          border: 2px solid rgba(255, 255, 255, 0.4) !important;
-          backdrop-filter: blur(10px) !important;
-          pointer-events: none !important;
-          visibility: visible !important;
-          animation: indicatorPulse 1.5s ease-in-out infinite !important;
-        }
-        @keyframes indicatorPulse {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
-        }
-        /* Ensure it works in fullscreen */
-        :fullscreen #netflix-speed-indicator,
-        :-webkit-full-screen #netflix-speed-indicator,
-        :-moz-full-screen #netflix-speed-indicator,
-        :-ms-fullscreen #netflix-speed-indicator {
-          position: fixed !important;
-          z-index: 2147483647 !important;
-          visibility: visible !important;
-        }
-      `;
-      document.head.appendChild(style);
+  const inViewport = el => {
+    const r = el.getBoundingClientRect();
+    return r.width>0 && r.height>0 && r.bottom>0 && r.right>0 &&
+           r.left < innerWidth && r.top < innerHeight;
+  };
+
+  /**
+   * Find the currently active video element on the page
+   * Uses module-specific video detection if available
+   * @returns {HTMLVideoElement|null} The active video element or null
+   */
+  function getActiveVideo() {
+    let videos = [];
+    
+    // Use module-specific video detection if available
+    if (currentModule && currentModule.getVideos) {
+      videos = currentModule.getVideos();
+    } else {
+      // Fallback to standard video detection
+      videos = Array.from(document.querySelectorAll('video'));
     }
     
-    const indicator = document.createElement('div');
-    indicator.id = 'netflix-speed-indicator';
-    indicator.textContent = `${settings.speedBoost}×`;
-    document.body.appendChild(indicator);
-    return indicator;
+    const good = videos.filter(inViewport)
+      .sort((a,b)=> (b.readyState - a.readyState) + ((+!b.paused) - (+!a.paused)));
+    const selected = good[0] || videos[0] || null;
+    
+    // Track video changes without logging
+    if (selected && selected !== getActiveVideo.lastVideo) {
+      getActiveVideo.lastVideo = selected;
+    }
+    
+    return selected;
   }
+  
+  /**
+   * Check if a target element is a control or within a control element
+   * Uses module-specific control detection
+   * @param {EventTarget} target - Target element from event
+   * @returns {boolean} True if target is a control element
+   */
+  function isOverControls(target) {
+    if (!target || !(target instanceof Element)) return false;
+    
+    // Use module-specific control detection if available
+    if (currentModule && currentModule.isOverControls) {
+      return currentModule.isOverControls(target);
+    }
+    
+    // Fallback to generic control detection
+    return false;
+  }
+  
+  /**
+   * Check if we're on a supported streaming service watch page
+   * Uses module-specific page detection
+   * @returns {boolean} True if on a watch page
+   */
+  function isWatchPage() {
+    if (currentModule && currentModule.isWatchPage) {
+      return currentModule.isWatchPage();
+    }
+    return false;
+  }
+  
+  // ============================================================================
+  // VISUAL FEEDBACK (WORKS ACROSS ALL SERVICES)
+  // ============================================================================
   
   function showSpeedIndicator(clickX, clickY) {
     // Show animation if enabled
@@ -338,91 +418,12 @@
   }
 
   // ============================================================================
-  // VIDEO & CONTROL DETECTION
-  // ============================================================================
-  
-  /**
-   * Selectors for Netflix's control elements
-   * Used to prevent speed boost activation when clicking on controls
-   */
-  const CONTROL_SELECTOR = [
-    // Only actual interactive controls
-    'button[data-uia*="play"]',
-    'button[data-uia*="pause"]', 
-    'button[data-uia*="volume"]',
-    'button[data-uia*="fullscreen"]',
-    'button[data-uia*="seek"]',
-    'button[data-uia*="settings"]',
-    'button[data-uia*="audio"]',
-    'button[data-uia*="subtitle"]',
-    '[data-uia*="play-pause-button"]',
-    '[data-uia*="volume-button"]',
-    '[data-uia*="fullscreen-button"]',
-    '[data-uia*="seek-bar"]',
-    '[data-uia*="scrubber-bar"]',
-    '[role="slider"]',
-    // Netflix control containers and bottom bar
-    '.PlayerControlsNeo__core-controls',
-    '.watch-video--controls-container',
-    '.controls',
-    '.PlayerControlsNeo__bottom-controls',
-    '.PlayerControlsNeo__bottom-controls-container',
-    '.PlayerControlsNeo__control-bar',
-    '.PlayerControlsNeo__control-bar-container',
-    // Bottom control bar elements
-    '[data-uia*="control-bar"]',
-    '[data-uia*="bottom-controls"]',
-    '[data-uia*="player-controls"]',
-    // Any element with control-related data attributes
-    '[data-uia*="control"]',
-    '[data-uia*="button"]',
-    '[data-uia*="slider"]',
-    '[data-uia*="bar"]',
-    '.control-bar'
-  ].join(',');
-
-  /**
-   * Check if an element is visible in the viewport
-   * @param {HTMLElement} el - Element to check
-   * @returns {boolean} True if element is visible
-   */
-  const inViewport = el => {
-    const r = el.getBoundingClientRect();
-    return r.width>0 && r.height>0 && r.bottom>0 && r.right>0 &&
-           r.left < innerWidth && r.top < innerHeight;
-  };
-
-  /**
-   * Find the currently active video element on the page
-   * Prioritizes videos that are in viewport, ready, and playing
-   * @returns {HTMLVideoElement|null} The active video element or null
-   */
-  function getActiveVideo() {
-    const vids = Array.from(document.querySelectorAll('video'));
-    const good = vids.filter(inViewport)
-      .sort((a,b)=> (b.readyState - a.readyState) + ((+!b.paused) - (+!a.paused)));
-    const selected = good[0] || vids[0] || null;
-    return selected;
-  }
-
-  /**
-   * Check if a target element is a control or within a control element
-   * @param {EventTarget} t - Target element from event
-   * @returns {boolean} True if target is a control element
-   */
-  const isOverControls = t => {
-    if (!t || !(t instanceof Element)) return false;
-    // Only check for actual control elements, not all elements with data-uia
-    return t.closest(CONTROL_SELECTOR) !== null;
-  };
-
-  // ============================================================================
-  // HOLD & RELEASE HANDLERS
+  // HOLD & RELEASE HANDLERS (WORKS ACROSS ALL SERVICES)
   // ============================================================================
   
   /**
    * Handle pointer down event to start speed boost timer
-   * Activates anywhere on screen except Netflix controls
+   * Activates anywhere on screen except streaming service controls
    * @param {PointerEvent} e - Pointer down event
    */
   function startHold(e) {
@@ -430,12 +431,13 @@
       return;
     }
     
-    // Check if clicking on Netflix controls - if so, don't activate speed boost
+    // Check if clicking on streaming service controls - if so, don't activate speed boost
     if (isOverControls(e.target)) {
       return;
     }
 
     const v = getActiveVideo();
+    
     if (!v) {
       return;
     }
@@ -490,7 +492,7 @@
       // Set flag to block the subsequent click event
       blockNextClick = true;
       
-      // Prevent the event from triggering Netflix controls
+      // Prevent the event from triggering streaming service controls
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -541,45 +543,9 @@
   }
 
   // ============================================================================
-  // EVENT BINDING
+  // KEYBOARD HANDLING (WORKS ACROSS ALL SERVICES)
   // ============================================================================
   
-  const pressOpts = { capture: true, passive: false };
-  
-  /**
-   * Bind/unbind pointer down event listener
-   * @param {boolean} on - True to bind, false to unbind
-   */
-  function bindPress(on){ 
-    (on ? addEventListener : removeEventListener)('pointerdown', startHold, pressOpts); 
-  }
-  
-  /**
-   * Bind/unbind pointer release event listeners
-   * @param {boolean} on - True to bind, false to unbind
-   */
-  function bindRelease(on){
-    const fn = on? addEventListener : removeEventListener;
-    // Non-passive for pointerup so we can preventDefault to block Netflix pause
-    const opts = { capture: true, passive: false };
-    fn('pointerup', endHold, opts);
-    fn('pointercancel', endHold, opts);
-    // These need to be non-passive since endHold calls preventDefault
-    const nonPassiveOpts = { capture: true, passive: false };
-    fn('mouseleave', endHold, nonPassiveOpts);
-    fn('blur', endHold, nonPassiveOpts);
-  }
-  
-  /**
-   * Bind/unbind click blocking event listener
-   * @param {boolean} on - True to bind, false to unbind
-   */
-  function bindClickBlocker(on){
-    const fn = on ? addEventListener : removeEventListener;
-    // Capture phase and non-passive to intercept before Netflix handlers
-    fn('click', blockClick, { capture: true, passive: false });
-  }
-
   /**
    * Handle custom key keydown event to start speed boost
    * Only activates if the custom key is pressed and not over input elements
@@ -707,12 +673,51 @@
   }
 
   // ============================================================================
-  // SPA NAVIGATION HANDLING
+  // EVENT BINDING (WORKS ACROSS ALL SERVICES)
+  // ============================================================================
+  
+  const pressOpts = { capture: true, passive: false };
+  
+  /**
+   * Bind/unbind pointer down event listener
+   * @param {boolean} on - True to bind, false to unbind
+   */
+  function bindPress(on){ 
+    (on ? addEventListener : removeEventListener)('pointerdown', startHold, pressOpts); 
+  }
+  
+  /**
+   * Bind/unbind pointer release event listeners
+   * @param {boolean} on - True to bind, false to unbind
+   */
+  function bindRelease(on){
+    const fn = on? addEventListener : removeEventListener;
+    // Non-passive for pointerup so we can preventDefault to block streaming service pause
+    const opts = { capture: true, passive: false };
+    fn('pointerup', endHold, opts);
+    fn('pointercancel', endHold, opts);
+    // These need to be non-passive since endHold calls preventDefault
+    const nonPassiveOpts = { capture: true, passive: false };
+    fn('mouseleave', endHold, nonPassiveOpts);
+    fn('blur', endHold, nonPassiveOpts);
+  }
+  
+  /**
+   * Bind/unbind click blocking event listener
+   * @param {boolean} on - True to bind, false to unbind
+   */
+  function bindClickBlocker(on){
+    const fn = on ? addEventListener : removeEventListener;
+    // Capture phase and non-passive to intercept before streaming service handlers
+    fn('click', blockClick, { capture: true, passive: false });
+  }
+
+  // ============================================================================
+  // SPA NAVIGATION HANDLING (WORKS ACROSS ALL SERVICES)
   // ============================================================================
   
   /**
-   * Handle route changes in Netflix's single-page app
-   * Now uses the unified navigation handler
+   * Handle route changes in streaming service single-page apps
    */
   function onRouteChange(){ 
     handleNavigation();
@@ -720,7 +725,7 @@
   
   /**
    * Patch History API to detect SPA navigation
-   * Netflix uses pushState/replaceState for navigation without page reload
+   * Streaming services use pushState/replaceState for navigation without page reload
    */
   function patchHistory(){
     ['pushState','replaceState'].forEach(k=>{
@@ -735,19 +740,33 @@
 
   /**
    * Observe DOM changes to detect new video elements
-   * Netflix dynamically creates/destroys video elements
+   * Streaming services dynamically create/destroy video elements
    * Only runs when extension is active
    */
   function observe(){
-    const mo = new MutationObserver(()=>{ 
+    const mo = new MutationObserver((mutations) => { 
       // Only update active video if extension is active
       if (!isActive) {
         return;
       }
       
-      const v = getActiveVideo(); 
-      if (v && v!==activeVideo) {
-        activeVideo = v;
+      // Check if any mutations actually affect video elements
+      const hasVideoChanges = mutations.some(mutation => {
+        return Array.from(mutation.addedNodes).some(node => 
+          node.nodeType === Node.ELEMENT_NODE && 
+          (node.tagName === 'VIDEO' || node.querySelector('video'))
+        ) || Array.from(mutation.removedNodes).some(node => 
+          node.nodeType === Node.ELEMENT_NODE && 
+          (node.tagName === 'VIDEO' || node.querySelector('video'))
+        );
+      });
+      
+      // Only check for video changes if there were actual video-related mutations
+      if (hasVideoChanges) {
+        const v = getActiveVideo(); 
+        if (v && v !== activeVideo) {
+          activeVideo = v;
+        }
       }
     });
     mo.observe(document.documentElement||document.body, {childList:true, subtree:true});
@@ -758,20 +777,12 @@
   // ============================================================================
   
   /**
-   * Check if we're on a Netflix watch page
-   * @returns {boolean} True if on a watch page
-   */
-  function isWatchPage() {
-    return window.location.pathname.startsWith('/watch/');
-  }
-
-  /**
    * Activate the extension on watch pages
    */
   function activateExtension() {
     if (isActive) return;
     
-    console.log('Netflix Speed Boost: Activating on watch page');
+    // Activating extension (no log needed)
     isActive = true;
     bindPress(true); 
     bindRelease(true); 
@@ -787,7 +798,7 @@
   function deactivateExtension() {
     if (!isActive) return;
     
-    console.log('Netflix Speed Boost: Deactivating on browse page');
+    // Deactivating extension (no log needed)
     isActive = false;
     endHold(); // Stop any active speed boost
     bindPress(false); 
@@ -812,7 +823,7 @@
       setTimeout(handleNavigation, 100);
     });
     
-    // 3. Listen for Netflix's custom events
+    // 3. Listen for streaming service custom events
     window.addEventListener('nfh-route', () => {
       setTimeout(handleNavigation, 100);
     });
@@ -837,26 +848,45 @@
   }
 
   /**
-   * Handle navigation events
+   * Handle navigation events with debouncing to prevent multiple rapid calls
    */
   function handleNavigation() {
-    if (isWatchPage() && !isActive) {
-      // Small delay to let Netflix load the video
-      setTimeout(() => {
-        activateExtension();
-      }, 500);
-    } else if (!isWatchPage() && isActive) {
-      deactivateExtension();
+    // Debounce navigation handling to prevent multiple rapid calls
+    if (handleNavigation.timeout) {
+      clearTimeout(handleNavigation.timeout);
     }
+    
+    handleNavigation.timeout = setTimeout(() => {
+      // Detect streaming service and load appropriate module
+      const service = detectStreamingService();
+      if (service) {
+        loadModule(service);
+      }
+      
+      if (isWatchPage() && !isActive) {
+        // Small delay to let streaming service load the video
+        setTimeout(() => {
+          activateExtension();
+        }, 500);
+      } else if (!isWatchPage() && isActive) {
+        deactivateExtension();
+      }
+    }, 100); // 100ms debounce
   }
 
   /**
    * Initialize the extension
-   * Loads settings, binds events, and sets up observers
+   * Loads settings, detects streaming service, and sets up observers
    */
   function init(){
     // Load settings first, then check if we should activate
     loadSettings(() => {
+      // Detect streaming service and load appropriate module
+      const service = detectStreamingService();
+      if (service) {
+        loadModule(service);
+      }
+      
       patchHistory(); // Always set up SPA navigation detection
       addEventListener('beforeunload', endHold, {passive:false});
       
