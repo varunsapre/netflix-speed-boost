@@ -126,6 +126,10 @@
         if (window.HBOMaxModule) {
           currentModule = window.HBOMaxModule;
           console.log('Netflix Speed Boost: HBO Max module loaded successfully');
+          // Initialize HBO Max speed controls
+          if (currentModule.initializeSpeedControls) {
+            currentModule.initializeSpeedControls();
+          }
         } else {
           console.error('Netflix Speed Boost: HBO Max module not found');
         }
@@ -567,8 +571,9 @@
       return;
     }
     
-    // Prevent default key behavior
+    // Prevent default key behavior and stop propagation
     e.preventDefault();
+    e.stopPropagation();
     
     const v = getActiveVideo();
     if (!v) {
@@ -625,8 +630,9 @@
       return;
     }
     
-    // Prevent default key behavior
+    // Prevent default key behavior and stop propagation
     e.preventDefault();
+    e.stopPropagation();
     
     // Clear the timer
     clearTimeout(holdTimer);

@@ -131,6 +131,319 @@
   }
   
   // ============================================================================
+  // HBO MAX SPEED CONTROLS
+  // ============================================================================
+  
+  let speedControlButton = null;
+  let speedMenu = null;
+  let currentSpeed = 1.0;
+  
+  /**
+   * Create the speed control button for HBO Max
+   */
+  function createSpeedControlButton() {
+    if (speedControlButton) return;
+    
+    // Create the speed control button
+    speedControlButton = document.createElement('button');
+    speedControlButton.setAttribute('data-testid', 'player-ux-speed-button');
+    speedControlButton.setAttribute('aria-label', 'Playback Speed');
+    speedControlButton.setAttribute('title', 'Playback Speed');
+    speedControlButton.className = 'PlayerButton-Fuse-Web-Play__sc-1mvfp60-0 cqPsco';
+    speedControlButton.innerHTML = `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+        <text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" fill="white">${currentSpeed}×</text>
+      </svg>
+    `;
+    
+    // Minimal styling - HBO Max's CSS classes will handle most styling
+    speedControlButton.style.cssText = `
+      margin-right: 8px !important;
+    `;
+    
+    // Add hover effect
+    speedControlButton.addEventListener('mouseenter', () => {
+      speedControlButton.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      speedControlButton.style.color = 'white';
+    });
+    
+    speedControlButton.addEventListener('mouseleave', () => {
+      speedControlButton.style.backgroundColor = 'transparent';
+      speedControlButton.style.color = 'rgba(255, 255, 255, 0.9)';
+    });
+    
+    // Add click handler
+    speedControlButton.addEventListener('click', toggleSpeedMenu);
+    
+    return speedControlButton;
+  }
+  
+  /**
+   * Create the speed menu dropdown
+   */
+  function createSpeedMenu() {
+    if (speedMenu) return speedMenu;
+    
+    speedMenu = document.createElement('div');
+    speedMenu.className = 'SpeedMenu-Fuse-Web-Play';
+    speedMenu.style.cssText = `
+      position: absolute !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      border-radius: 8px !important;
+      padding: 8px 0 !important;
+      min-width: 120px !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+      z-index: 2147483647 !important;
+      display: none !important;
+      backdrop-filter: blur(10px) !important;
+    `;
+    
+    // Load speed options from settings and populate menu
+    chrome.storage.sync.get({ enabledSpeeds: [0.5, 0.75, 1, 1.25, 1.5, 2, 3] }, (result) => {
+      const speeds = result.enabledSpeeds;
+      
+      speeds.forEach(speed => {
+      const speedOption = document.createElement('button');
+      speedOption.className = 'SpeedOption-Fuse-Web-Play';
+      speedOption.textContent = `${speed}×`;
+      speedOption.style.cssText = `
+        display: block !important;
+        width: 100% !important;
+        padding: 12px 16px !important;
+        background: transparent !important;
+        border: none !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-align: left !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+      `;
+      
+      if (speed === currentSpeed) {
+        speedOption.style.color = 'white';
+        speedOption.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      }
+      
+      speedOption.addEventListener('mouseenter', () => {
+        speedOption.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        speedOption.style.color = 'white';
+      });
+      
+      speedOption.addEventListener('mouseleave', () => {
+        if (speed === currentSpeed) {
+          speedOption.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          speedOption.style.color = 'white';
+        } else {
+          speedOption.style.backgroundColor = 'transparent';
+          speedOption.style.color = 'rgba(255, 255, 255, 0.9)';
+        }
+      });
+      
+      speedOption.addEventListener('click', () => {
+        setPlaybackSpeed(speed);
+        hideSpeedMenu();
+      });
+      
+      speedMenu.appendChild(speedOption);
+      });
+    });
+    
+    return speedMenu;
+  }
+  
+  /**
+   * Toggle the speed menu visibility
+   */
+  function toggleSpeedMenu(e) {
+    e.stopPropagation();
+    
+    if (!speedMenu) {
+      createSpeedMenu();
+      document.body.appendChild(speedMenu);
+    }
+    
+    if (speedMenu.style.display === 'none' || !speedMenu.style.display) {
+      showSpeedMenu();
+    } else {
+      hideSpeedMenu();
+    }
+  }
+  
+  /**
+   * Show the speed menu
+   */
+  function showSpeedMenu() {
+    if (!speedMenu) return;
+    
+    speedMenu.style.display = 'block';
+    
+    // Position the menu relative to the button
+    if (speedControlButton) {
+      const rect = speedControlButton.getBoundingClientRect();
+      
+      // Check if we're in fullscreen mode
+      const isFullscreen = document.fullscreenElement || 
+                          document.webkitFullscreenElement || 
+                          document.mozFullScreenElement || 
+                          document.msFullscreenElement;
+      
+      if (isFullscreen) {
+        // In fullscreen, position relative to the fullscreen element
+        const fullscreenElement = isFullscreen;
+        const fullscreenRect = fullscreenElement.getBoundingClientRect();
+        
+        // Position relative to the fullscreen container
+        speedMenu.style.position = 'fixed';
+        speedMenu.style.bottom = `${fullscreenRect.height - (rect.top - fullscreenRect.top) + 10}px`;
+        speedMenu.style.right = `${fullscreenRect.width - (rect.right - fullscreenRect.left)}px`;
+        speedMenu.style.zIndex = '2147483647';
+        
+        // Append to fullscreen element instead of body
+        if (speedMenu.parentElement !== fullscreenElement) {
+          fullscreenElement.appendChild(speedMenu);
+        }
+      } else {
+        // Normal positioning for non-fullscreen
+        speedMenu.style.position = 'absolute';
+        speedMenu.style.bottom = `${window.innerHeight - rect.top + 10}px`;
+        speedMenu.style.right = `${window.innerWidth - rect.right}px`;
+        
+        // Append to body if not already there
+        if (speedMenu.parentElement !== document.body) {
+          document.body.appendChild(speedMenu);
+        }
+      }
+    }
+    
+    // Close menu when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', hideSpeedMenu);
+    }, 100);
+  }
+  
+  /**
+   * Hide the speed menu
+   */
+  function hideSpeedMenu() {
+    if (speedMenu) {
+      speedMenu.style.display = 'none';
+    }
+    document.removeEventListener('click', hideSpeedMenu);
+  }
+  
+  /**
+   * Set the playback speed
+   */
+  function setPlaybackSpeed(speed) {
+    const videos = getHBOMaxVideo();
+    if (videos && videos.length > 0) {
+      videos.forEach(video => {
+        video.playbackRate = speed;
+      });
+      currentSpeed = speed;
+      
+      // Update button display
+      if (speedControlButton) {
+        speedControlButton.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+            <text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" fill="white">${speed}×</text>
+          </svg>
+        `;
+      }
+      
+      // Update menu selection
+      if (speedMenu) {
+        const options = speedMenu.querySelectorAll('.SpeedOption-Fuse-Web-Play');
+        options.forEach(option => {
+          const optionSpeed = parseFloat(option.textContent.replace('×', ''));
+          if (optionSpeed === speed) {
+            option.style.color = 'white';
+            option.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          } else {
+            option.style.color = 'rgba(255, 255, 255, 0.9)';
+            option.style.backgroundColor = 'transparent';
+          }
+        });
+      }
+    }
+  }
+  
+  /**
+   * Add the speed control button to HBO Max player controls
+   */
+  function addSpeedControlToPlayer() {
+    // Wait for HBO Max controls to be available
+    const checkForControls = () => {
+      // Look for the right-side control container specifically
+      const rightControlsContainer = document.querySelector('.ControlsFooterBottomRight-Fuse-Web-Play__sc-1la552d-14');
+      
+      if (rightControlsContainer && !speedControlButton) {
+        createSpeedControlButton();
+        
+        // Insert the speed control button at the beginning of the right controls
+        // This will place it before volume, audio/subtitle, and fullscreen buttons
+        rightControlsContainer.insertBefore(speedControlButton, rightControlsContainer.firstChild);
+      }
+    };
+    
+    // Check immediately and then periodically
+    checkForControls();
+    const interval = setInterval(() => {
+      if (speedControlButton) {
+        clearInterval(interval);
+      } else {
+        checkForControls();
+      }
+    }, 1000);
+    
+    // Clean up interval after 30 seconds
+    setTimeout(() => clearInterval(interval), 30000);
+  }
+  
+  /**
+   * Initialize HBO Max speed controls
+   */
+  function initializeHBOMaxSpeedControls() {
+    // Add speed controls when the page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', addSpeedControlToPlayer);
+    } else {
+      addSpeedControlToPlayer();
+    }
+    
+    // Also try to add controls when navigation happens
+    const observer = new MutationObserver(() => {
+      if (!speedControlButton) {
+        addSpeedControlToPlayer();
+      }
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    // Handle fullscreen changes
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+  }
+  
+  /**
+   * Handle fullscreen mode changes
+   */
+  function handleFullscreenChange() {
+    // If menu is open and we're changing fullscreen state, reposition it
+    if (speedMenu && speedMenu.style.display === 'block') {
+      showSpeedMenu();
+    }
+  }
+
+  // ============================================================================
   // EXPORT HBO MAX MODULE
   // ============================================================================
   
@@ -140,7 +453,8 @@
     isOverControls: isOverHBOMaxControls,
     tryPlayerAPI: tryHBOMaxPlayerAPI,
     getVideos: getHBOMaxVideo,
-    controlSelector: HBOMAX_CONTROL_SELECTOR
+    controlSelector: HBOMAX_CONTROL_SELECTOR,
+    initializeSpeedControls: initializeHBOMaxSpeedControls
   };
   
   // HBO Max module loaded (no log needed - main loader will confirm)
