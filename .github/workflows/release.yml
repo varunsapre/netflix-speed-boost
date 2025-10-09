@@ -23,18 +23,6 @@ jobs:
         id: repo_root
         run: echo "ROOT=$(pwd)" >> $GITHUB_OUTPUT
       
-      - name: Verify repository structure
-        run: |
-          REPO_ROOT="${{ steps.repo_root.outputs.ROOT }}"
-          echo "Repository root: $REPO_ROOT"
-          echo "Current directory: $(pwd)"
-          echo "Repository contents:"
-          ls -la
-          echo "Checking for key files:"
-          ls -la manifest.json content.js popup.html popup.js
-          echo "Checking workflow scripts directory:"
-          ls -la .github/workflows/scripts/
-      
       - name: Extract changelog for this version
         id: changelog
         run: |
@@ -131,11 +119,13 @@ jobs:
             ---
             
             ### 🎯 Key Features
-            - Hold on the right side of video OR press custom key to speed boost
-            - Customizable speeds from 1.25× to 5×
-            - Beautiful wave animations
-            - Works in fullscreen
-            - Privacy-first (no tracking, no data collection)
+            - **Netflix & HBO Max Support**: Works on both streaming platforms
+            - **Temporary Speed Boost**: Hold anywhere on screen OR press custom key
+            - **Permanent Speed Control**: HBO Max on-screen speed button
+            - **Customizable speeds**: 1.25× to 5× with unified settings
+            - **Beautiful animations**: Wave effects and speed indicators
+            - **Fullscreen support**: Works in both normal and fullscreen modes
+            - **Privacy-first**: No tracking, no data collection
             
             ---
             
