@@ -1,13 +1,13 @@
 *This project was developed using Cursor and represents a first trial of using an all-AI coding environment for complete software development.*
 
 ---
-# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.4-blue)
+# Netflix Speed Boost  ![Version](https://img.shields.io/badge/version-1.1.5-blue)
 
 <div align="center">
   <img src="assets/logo.png" alt="Netflix Speed Boost Logo" width="128" height="128">
 </div>
 
-Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily speed up Netflix videos with a simple hold gesture.
+Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily speed up Netflix and HBO Max videos with a simple hold gesture.
 
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -37,14 +37,25 @@ Skip the boring slow parts! 🚀 A Chrome extension that lets you temporarily sp
 
 ## 🎬 How to Use
 
-1. **Go to Netflix**: Open any show or movie
+1. **Go to Netflix or HBO Max**: Open any show or movie
 2. **Set Your Speed** (optional): Click the extension icon to pick your favorite speed and key
-3. **Speed It Up**: When you hit a boring part:
-   - Hold **anywhere on the screen**, OR
-   - Hold your custom key (default: 'L')
-4. **Let Go**: Release to instantly return to normal speed
 
-**💡 Pro Tip**: It works anywhere on the screen except Netflix's controls, so you won't accidentally mess up Netflix's interface!
+### 🚀 Temporary Speed Boost (Hold-to-Activate)
+Perfect for skipping boring parts, intros, or slow scenes:
+
+- **Netflix**: Hold **anywhere on the screen** or your custom key (default: 'L')
+- **HBO Max**: Hold **anywhere on the screen** or your custom key (default: 'L')
+- **Let Go**: Release to instantly return to normal speed
+
+### ⚡ Permanent Speed Change (Set-and-Forget)
+For when you want to watch the entire show at a faster pace:
+
+- **HBO Max**: Click the on-screen speed button and select your preferred speed
+- **Netflix**: thank god they already have the setting integrated into the native controls 🙏🏽 
+- **Stays Active**: Speed remains until you change it again
+- **No Holding Required**: Just set it and enjoy the show!
+
+**💡 Pro Tip**: Use temporary boost for selective speeding, and permanent speed for shows you want to watch faster throughout!
 
 ## ⚙️ Customize Your Experience
 
@@ -56,8 +67,8 @@ Click the extension icon to make it yours:
 
 ### ⌨️ Your Speed Key
 - **Pick Any Key**: Set any key as your speed trigger (we suggest 'L')
-- **Smart Setup**: Click "Set Key" and press whatever you want
-- **No Conflicts**: We'll warn you if you pick a key Netflix already uses
+- **Smart Setup**: Click the key field and press whatever you want
+- **No Conflicts**: We'll warn you if you pick a key that conflicts with native controls
 
 ### 🎨 Visual Effects
 - **Wave Animation**: Pretty waves show when you're speeding up (looks cool!)
@@ -131,7 +142,17 @@ Make sure you're not holding over Netflix's control bar. The extension is smart 
 
 ## 📝 Changelog
 
-### Version 1.1.4 (Latest)
+### Version 1.1.5 (Latest)
+- **NEW**: HBO Max support - now works on both Netflix and HBO Max!
+- **NEW**: Unified settings interface - one popup for all supported services
+- **NEW**: HBO Max custom speed control button with on-screen speed menu
+- **NEW**: Fullscreen popup support for HBO Max speed controls
+- **IMPROVED**: Cleaner key binding interface - click directly on key field to change
+- **IMPROVED**: Better event handling - no more control bar interference during speed boost
+- **FIXED**: Keyboard events no longer trigger video player control bars
+- **FIXED**: Service-specific popup complexity removed for better UX
+
+### Version 1.1.4
 - **NEW**: Full screen clickable area - works anywhere on screen, not just right third
 - **NEW**: Enhanced control detection - better protection of Netflix's interface
 - **NEW**: Unicode speed indicator with ▶▶ symbol for better visual feedback

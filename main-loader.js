@@ -4,7 +4,7 @@
  * This script detects the current streaming service and loads the appropriate module.
  * It provides the core functionality that works across all supported services.
  * 
- * @version 1.1.4
+ * @version 1.1.5
  * @author Varun Sapre
  */
 

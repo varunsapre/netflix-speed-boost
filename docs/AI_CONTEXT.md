@@ -1,37 +1,53 @@
 # AI Context Summary
 
 ## Project Overview
-**Netflix Speed Boost** - A Chrome extension that allows temporary playback speed boosting on Netflix videos by holding down on the right side of the video area.
+**Netflix Speed Boost** - A Chrome extension that allows temporary and permanent playback speed control on Netflix and HBO Max videos.
 
 ## Core Functionality
-- **Hold-to-boost**: Hold on right 1/3 of video area OR hold custom key to temporarily increase playback speed
+
+### 🚀 Temporary Speed Boost (Hold-to-Activate)
+- **Hold-to-boost**: Hold anywhere on screen OR hold custom key to temporarily increase playback speed
 - **Release-to-restore**: Release to instantly return to normal speed
 - **Dual activation**: Both pointer events (click/hold) and customizable key hold supported
+- **Cross-platform**: Works on both Netflix and HBO Max
+- **Smart detection**: Only activates on video elements, not controls or input fields
+
+### ⚡ Permanent Speed Change (Set-and-Forget)
+- **HBO Max**: On-screen speed control button with dropdown menu for persistent speed changes
+- **Netflix**: Uses native speed controls (already integrated)
+- **No holding required**: Set once and speed stays active until changed
+
+### ⚙️ Unified Settings
 - **Customizable key binding**: Default 'L' key, user can change to any key
 - **Customizable speed**: 1.25× to 5× (default: 1.5×)
 - **Visual feedback**: Optional wave animations and speed indicators
-- **Smart detection**: Only activates on video elements, not controls or input fields
+- **Single popup**: One settings interface for all supported services
 
 ## Technical Architecture
 - **Manifest V3** Chrome extension
-- **Content script** (`content.js`) - Main logic injected into Netflix pages
-- **Popup interface** (`popup.html`/`popup.js`) - Settings UI
+- **Modular design** - Separate modules for Netflix and HBO Max
+- **Service detection** - Automatically loads appropriate module based on URL
+- **Unified popup** - Single settings interface for all services
 - **Chrome storage sync** - Settings persist across devices
-- **SPA navigation handling** - Detects Netflix route changes
+- **SPA navigation handling** - Detects route changes on both platforms
 
 ## Key Files
 - `manifest.json` - Extension configuration and permissions
-- `content.js` - Core functionality (video detection, hold/release logic, visual feedback)
-- `popup.html`/`popup.js` - Settings interface
+- `main-loader.js` - Service detection and core functionality
+- `netflix-module.js` - Netflix-specific functionality
+- `hbomax-module.js` - HBO Max-specific functionality (includes custom speed controls)
+- `popup.html`/`popup.js` - Unified settings interface
 - `assets/icons/` - Extension icons (16px, 48px, 128px)
 
 ## Technical Details
-- **Permissions**: Only `storage` and `https://www.netflix.com/*` host permission
-- **Content script matches**: `https://www.netflix.com/watch/*`
+- **Permissions**: `storage` and host permissions for `https://www.netflix.com/*` and `https://play.hbomax.com/*`
+- **Content script matches**: Separate entries for Netflix and HBO Max
 - **Event handling**: Pointer events and keyboard events (customizable key) with hold threshold (150ms)
-- **Activation methods**: Right-click hold OR custom key hold (user configurable, default: 'L')
-- **Key binding system**: Interactive key capture in popup interface
-- **Visual feedback**: CSS animations, fullscreen support
+- **Activation methods**: 
+  - **Netflix**: Hold anywhere on screen OR custom key hold
+  - **HBO Max**: Hold anywhere on screen OR custom key hold OR on-screen speed button
+- **Key binding system**: Simplified interface - click key field directly to change
+- **Visual feedback**: CSS animations, fullscreen support, no control bar interference
 - **Privacy**: No tracking, local storage only
 
 ## Development Context
@@ -42,10 +58,13 @@
 - MIT licensed, open source
 
 ## Common Development Tasks
-- Modify speed boost behavior → Edit `content.js`
+- Modify speed boost behavior → Edit `main-loader.js`
+- Update Netflix-specific features → Edit `netflix-module.js`
+- Update HBO Max-specific features → Edit `hbomax-module.js`
 - Update settings UI → Edit `popup.html`/`popup.js`
-- Change visual feedback → Modify CSS in `content.js`
+- Change visual feedback → Modify CSS in `main-loader.js`
 - Update permissions → Edit `manifest.json`
 - Regenerate icons → Run `.github/workflows/scripts/generate-icons.sh` (then commit the generated icons)
 - Change key binding system → Edit key capture logic in `popup.js`
-- Modify key handling → Edit `handleCustomKeyDown/Up` functions in `content.js`
+- Modify key handling → Edit `handleCustomKeyDown/Up` functions in `main-loader.js`
+- Add new streaming service → Create new module file and update `main-loader.js` service detection

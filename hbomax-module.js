@@ -4,7 +4,7 @@
  * HBO Max-specific functionality for the speed boost extension.
  * Handles HBO Max's unique video player structure and control elements.
  * 
- * @version 1.1.4
+ * @version 1.1.5
  * @author Varun Sapre
  */
 

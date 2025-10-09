@@ -5,6 +5,31 @@ All notable changes to Netflix Speed Boost will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2025-01-27
+
+### Added
+- **HBO Max Support**: Full support for HBO Max streaming platform
+- **Unified Settings Interface**: Single popup for all supported services (Netflix and HBO Max)
+- **HBO Max Custom Speed Controls**: On-screen speed control button with dropdown menu
+- **Fullscreen Popup Support**: HBO Max speed controls work in both normal and fullscreen modes
+- **Service-Specific Features**: Netflix gets hold-to-activate, HBO Max gets custom speed button
+
+### Changed
+- **Simplified Key Binding**: Removed "Set Key" button - users now click directly on key field
+- **Unified Settings**: Same speed, key binding, and visual effects apply to all services
+- **Better Event Handling**: Keyboard events no longer trigger video player control bars
+
+### Fixed
+- **Control Bar Interference**: Speed boost no longer shows video player controls during activation
+- **Event Propagation**: Added stopPropagation() to prevent keyboard events from bubbling up
+- **Service-Specific Complexity**: Removed confusing service-specific popup system
+
+### Technical
+- Modular architecture with separate Netflix and HBO Max modules
+- Service detection and dynamic module loading
+- Enhanced event handling with preventDefault and stopPropagation
+- Unified settings storage across all supported platforms
+
 ## [1.1.4] - 2025-01-27
 
 ### Added
