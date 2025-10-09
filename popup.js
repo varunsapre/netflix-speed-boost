@@ -220,12 +220,9 @@ function startKeyListening() {
   
   isListeningForKey = true;
   const keyInput = document.getElementById('key-binding-input');
-  const keyBtn = document.getElementById('key-binding-btn');
   
   keyInput.classList.add('listening');
-  keyBtn.classList.add('listening');
-  keyBtn.textContent = 'Press any key...';
-  keyInput.value = '';
+  keyInput.value = 'Press any key...';
   
   // Add global key listener
   document.addEventListener('keydown', handleKeyCapture, { capture: true });
@@ -239,11 +236,8 @@ function stopKeyListening() {
   
   isListeningForKey = false;
   const keyInput = document.getElementById('key-binding-input');
-  const keyBtn = document.getElementById('key-binding-btn');
   
   keyInput.classList.remove('listening');
-  keyBtn.classList.remove('listening');
-  keyBtn.textContent = 'Set Key';
   
   // Remove global key listener
   document.removeEventListener('keydown', handleKeyCapture, { capture: true });
@@ -398,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('reset-btn').addEventListener('click', resetSettings);
   
   // Key binding setup
-  document.getElementById('key-binding-btn').addEventListener('click', startKeyListening);
   document.getElementById('key-binding-input').addEventListener('click', startKeyListening);
   
   // Toggle button clicks

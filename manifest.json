@@ -18,7 +18,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Netflix Speed Boost Settings",
+    "default_title": "Video Speed Boost Settings",
     "default_icon": {
       "16": "assets/icons/icon16.png",
       "48": "assets/icons/icon48.png",

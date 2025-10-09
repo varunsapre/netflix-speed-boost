@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Netflix Speed Boost</title>
+  <title>Video Speed Boost</title>
   <style>
     * {
       margin: 0;
@@ -246,7 +246,7 @@
     }
 
     .key-binding-input {
-      width: 60px;
+      width: 100%;
       height: 40px;
       border: 2px solid #4a5568;
       border-radius: 8px;
@@ -272,30 +272,6 @@
       box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.2);
     }
 
-    .key-binding-btn {
-      flex: 1;
-      height: 40px;
-      border: 2px solid #4a5568;
-      border-radius: 8px;
-      background: #2d3748;
-      color: #718096;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-
-    .key-binding-btn:hover {
-      border-color: #5a6678;
-      color: #a0aec0;
-    }
-
-    .key-binding-btn.listening {
-      background: rgba(252, 129, 129, 0.1);
-      border-color: #fc8181;
-      color: #fc8181;
-    }
 
     .key-binding-note {
       margin-top: 8px;
@@ -313,7 +289,7 @@
   <div class="header">
     <img src="assets/icons/icon48.png" alt="Logo" class="logo">
     <div class="header-text">
-      <h1>Netflix Speed Boost</h1>
+      <h1>Video Speed Boost</h1>
     </div>
     <div>
       <button type="button" id="reset-btn" class="reset-btn">Reset</button>
@@ -348,7 +324,6 @@
         <div class="description">Choose a key to hold for speed boost (default: L)</div>
         <div class="key-binding-container">
           <input type="text" id="key-binding-input" class="key-binding-input" value="L" maxlength="1" readonly>
-          <button type="button" id="key-binding-btn" class="key-binding-btn">Set Key</button>
         </div>
         <div class="key-binding-note">
           <small>⚠️ Avoid native key bindings</small>
