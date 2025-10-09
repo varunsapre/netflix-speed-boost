@@ -34,6 +34,7 @@ cp README.md "$TEMP_DIR/"
 
 # Copy assets/icons directory (required for extension)
 if [ -d "assets/icons" ]; then
+    mkdir -p "$TEMP_DIR/assets"
     cp -r assets/icons "$TEMP_DIR/assets/"
 fi
 
